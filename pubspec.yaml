@@ -1,0 +1,27 @@
+name: toad_health
+description: "toadHEALTH - a gentle, hand-drawn health companion with a toad at its heart."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/app_icon.png
+    - assets/images/banner.png
+  fonts:
+    - family: PatrickHand
+      fonts:
+        - asset: assets/fonts/PatrickHand-Regular.ttf
+    - family: Caveat
+      fonts:
+        - asset: assets/fonts/Caveat.ttf
