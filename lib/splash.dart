@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'app.dart';
 import 'charts.dart';
 import 'nav_shell.dart';
+import 'screens/lock_screen.dart';
+import 'state/app_services.dart';
 import 'theme.dart';
 import 'toad_painter.dart';
 
-/// Splash: the toad hops in three times, the handwritten logo ink-fades in,
-/// and a little toad walks along the bottom of the screen before the app
-/// flows into the home shell.
+/// Splash: the toad hops in, the handwritten logo ink-fades in, and a little
+/// toad walks along the bottom. Meanwhile the encrypted vault boots in
+/// parallel; the splash routes to the lock screen or the home shell.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -32,12 +34,16 @@ class _SplashScreenState extends State<SplashScreen>
     _c.forward();
   }
 
-  void _onDone(AnimationStatus status) {
+  Future<void> _onDone(AnimationStatus status) async {
     if (status != AnimationStatus.completed) return;
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(FlowRoute(page: const HomeShell()));
-    });
+    await AppServices.boot();
+    await Future.delayed(const Duration(milliseconds: 250));
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      FlowRoute(
+        page: AppServices.locked ? const LockScreen() : const HomeShell(),
+      ),
+    );
   }
 
   @override

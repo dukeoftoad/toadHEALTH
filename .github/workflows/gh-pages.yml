@@ -42,7 +42,7 @@ jobs:
         run: flutter analyze
 
       - name: Build web
-        run: flutter build web --release --base-href "/toadHEALTH/"
+        run: flutter build web --release --web-renderer html --base-href "/toadHEALTH/"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

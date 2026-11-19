@@ -9,14 +9,17 @@ import 'charts.dart';
 import 'data.dart';
 import 'icon_painter.dart';
 import 'profile_screen.dart';
+import 'screens/log_sheets.dart';
 import 'sleep_screen.dart';
+import 'state/app_services.dart';
 import 'theme.dart';
 import 'toad_painter.dart';
 import 'water_screen.dart';
 import 'widgets.dart';
 
-/// Home: the toad's pond dashboard. The mascot walks (or runs) inside a
-/// sketchy progress ring - tap it and it hops while your hop count grows.
+/// Home: the toad's pond dashboard. Every number on this screen is REAL -
+/// recorded in the encrypted on-device vault and fed by the hardware step
+/// sensor where the device has one.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -46,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void _tapToad() {
     HapticFeedback.selectionClick();
     _hop.forward(from: 0);
-    HealthData.steps.value = HealthData.steps.value + 50;
+    AppServices.controller.addSteps(50, manual: true);
   }
 
   void _open(Widget page) {
@@ -79,57 +82,122 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(18, 10, 18, 130),
-              children: [
-                Row(
+            child: AnimatedBuilder(
+              animation: AppServices.controller,
+              builder: (context, _) {
+                return ListView(
+                  padding: const EdgeInsets.fromLTRB(18, 10, 18, 130),
                   children: [
-                    const SketchIcon(
-                      icon: ToadIcon.run,
-                      size: 26,
-                      color: ToadColors.toadDeep,
-                      seed: 3,
+                    Row(
+                      children: [
+                        const SketchIcon(
+                          icon: ToadIcon.run,
+                          size: 26,
+                          color: ToadColors.toadDeep,
+                          seed: 3,
+                        ),
+                        const SizedBox(width: 8),
+                        Text('toadHEALTH', style: ToadText.h2),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () => _open(const ProfileScreen()),
+                          child: const SketchIcon(
+                            icon: ToadIcon.gear,
+                            size: 24,
+                            color: ToadColors.inkSoft,
+                            seed: 5,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Text('toadHEALTH', style: ToadText.h2),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => _open(const ProfileScreen()),
-                      child: const SketchIcon(
-                        icon: ToadIcon.gear,
-                        size: 24,
-                        color: ToadColors.inkSoft,
-                        seed: 5,
+                    const SizedBox(height: 18),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Good day, friend!', style: ToadText.h1),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        HealthData.demoData
+                            ? 'demo pond - erase it anytime in You'
+                            : 'your pond, your data - sealed on this device',
+                        style: ToadText.label,
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    if (!HealthData.firstRunDone) _buildWelcomeCard(),
+                    if (!HealthData.firstRunDone) const SizedBox(height: 16),
+                    _buildHeroCard(),
+                    const SizedBox(height: 20),
+                    const SectionHeader(title: 'Vitals', accent: ToadColors.toad),
+                    const SizedBox(height: 10),
+                    _buildVitals(),
+                    const SizedBox(height: 20),
+                    const SectionHeader(title: 'This week', accent: ToadColors.toad),
+                    const SizedBox(height: 10),
+                    _buildWeekCard(),
+                    const SizedBox(height: 20),
+                    const SectionHeader(title: "Toad's wisdom", accent: ToadColors.toad),
+                    const SizedBox(height: 10),
+                    _buildTipCard(),
+                    const SizedBox(height: 8),
                   ],
-                ),
-                const SizedBox(height: 18),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Good day, friend!', style: ToadText.h1),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Let us hop toward a healthier you', style: ToadText.label),
-                ),
-                const SizedBox(height: 16),
-                _buildHeroCard(),
-                const SizedBox(height: 20),
-                const SectionHeader(title: 'Vitals', accent: ToadColors.toad),
-                const SizedBox(height: 10),
-                _buildVitals(),
-                const SizedBox(height: 20),
-                const SectionHeader(title: 'This week', accent: ToadColors.toad),
-                const SizedBox(height: 10),
-                _buildWeekCard(),
-                const SizedBox(height: 20),
-                const SectionHeader(title: "Toad's wisdom", accent: ToadColors.toad),
-                const SizedBox(height: 10),
-                _buildTipCard(),
-                const SizedBox(height: 8),
-              ],
+                );
+              },
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWelcomeCard() {
+    return SketchCard(
+      seed: 1.1,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const SketchIcon(
+                icon: ToadIcon.sparkle,
+                size: 22,
+                color: ToadColors.sun,
+                seed: 2,
+              ),
+              const SizedBox(width: 8),
+              Text('Welcome to your pond', style: ToadText.h2),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Everything you log stays on this device, sealed with AES-256 '
+            'encryption. No account, no cloud, no tracking. Start with a '
+            'walk or a glass of water - or set an app password under You.',
+            style: ToadText.body,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              SketchButton(
+                onTap: () => AppServices.controller.markFirstRunDone(),
+                child: const Text(
+                  'Got it',
+                  style: TextStyle(fontFamily: 'PatrickHand', fontSize: 15),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SketchButton(
+                onTap: () => showLogStepsSheet(context),
+                background: ToadColors.toadLight,
+                borderColor: ToadColors.toadDeep,
+                child: const Text(
+                  'Log a walk',
+                  style: TextStyle(fontFamily: 'PatrickHand', fontSize: 15),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -147,7 +215,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           return Column(
             children: [
               SpeechBubble(
-                text: 'Ribbit! ${fmtNumber(steps)} hops so far. Tap me to add more!',
+                text: steps == 0
+                    ? 'The pond is quiet... log your first hops!'
+                    : 'Ribbit! ${fmtNumber(steps)} hops so far. Tap me to add more!',
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -174,8 +244,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           builder: (context, _) {
                             final hopT = _hop.value;
                             return Transform.translate(
-                              offset:
-                                  Offset(0, -36 * math.sin(hopT * math.pi)),
+                              offset: Offset(0, -36 * math.sin(hopT * math.pi)),
                               child: SizedBox(
                                 width: 150,
                                 height: 150,
@@ -218,47 +287,54 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return ValueListenableBuilder<int>(
       valueListenable: HealthData.water,
       builder: (context, water, _) {
-        return GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.30,
-          children: [
-            StatTile(
-              icon: ToadIcon.heart,
-              label: 'heart rate',
-              value: '${HealthData.heartRate} bpm',
-              accent: ToadColors.coral,
-              seed: 1.2,
-              onTap: () => _open(const ActivityScreen()),
-            ),
-            StatTile(
-              icon: ToadIcon.drop,
-              label: 'water',
-              value: '$water / ${HealthData.waterGoal} glasses',
-              accent: ToadColors.pond,
-              seed: 2.4,
-              onTap: () => _open(const WaterScreen()),
-            ),
-            StatTile(
-              icon: ToadIcon.moon,
-              label: 'sleep',
-              value: '7h 20m',
-              accent: ToadColors.moss,
-              seed: 3.6,
-              onTap: () => _open(const SleepScreen()),
-            ),
-            StatTile(
-              icon: ToadIcon.flame,
-              label: 'energy',
-              value: '${fmtNumber(HealthData.energy)} kcal',
-              accent: ToadColors.sun,
-              seed: 4.8,
-              onTap: () => _open(const ActivityScreen()),
-            ),
-          ],
+        return ValueListenableBuilder<int>(
+          valueListenable: HealthData.steps,
+          builder: (context, steps, _) {
+            return GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.30,
+              children: [
+                StatTile(
+                  icon: ToadIcon.walk,
+                  label: 'hops today',
+                  value: fmtNumber(steps),
+                  accent: ToadColors.toad,
+                  seed: 1.2,
+                  onTap: () => _open(const ActivityScreen()),
+                ),
+                StatTile(
+                  icon: ToadIcon.drop,
+                  label: 'water',
+                  value: '$water / ${HealthData.waterGoal} glasses',
+                  accent: ToadColors.pond,
+                  seed: 2.4,
+                  onTap: () => _open(const WaterScreen()),
+                ),
+                StatTile(
+                  icon: ToadIcon.moon,
+                  label: 'sleep',
+                  value: HealthData.todaySleepMin > 0
+                      ? fmtDuration(HealthData.todaySleepMin)
+                      : 'not set',
+                  accent: ToadColors.moss,
+                  seed: 3.6,
+                  onTap: () => _open(const SleepScreen()),
+                ),
+                StatTile(
+                  icon: ToadIcon.chart,
+                  label: '7-day average',
+                  value: '${fmtNumber(HealthData.avgSteps7)}/day',
+                  accent: ToadColors.sun,
+                  seed: 4.8,
+                  onTap: () => _open(const ActivityScreen()),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -291,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               painter: SketchBarsPainter(
                 values: HealthData.weekSteps,
                 labels: HealthData.weekLabels,
-                activeIndex: 5,
+                activeIndex: 6,
                 barFill: ToadColors.toadLight,
                 activeFill: ToadColors.toad,
               ),

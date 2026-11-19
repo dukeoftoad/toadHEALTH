@@ -1,8 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
-import 'icon_painter.dart';
+import 'data/models.dart';
+import 'state/app_controller.dart';
 
-/// Thousands separator for hand-written numbers.
+/// Compatibility facade over the live [AppController].
+///
+/// Before v1.1 this file held simulated data; now every value is REAL,
+/// persisted in the AES-256-GCM encrypted on-device vault and fed by the
+/// hardware step sensor where available. Screens keep their existing
+/// `HealthData.x` call sites; the plumbing below simply delegates.
+
 String fmtNumber(int n) {
   final s = n.toString();
   final b = StringBuffer();
@@ -16,25 +23,44 @@ String fmtNumber(int n) {
   return b.toString();
 }
 
-/// Mock health data store. [steps] and [water] are live notifiers so screens
-/// stay in sync (tap the toad on Home, watch the Water tile update).
+String fmtDuration(int minutes) {
+  final h = minutes ~/ 60;
+  final m = minutes % 60;
+  return '${h}h ${m.toString().padLeft(2, '0')}m';
+}
+
 class HealthData {
-  static final ValueNotifier<int> steps = ValueNotifier<int>(4382);
-  static final ValueNotifier<int> water = ValueNotifier<int>(5);
+  static AppController? _c;
 
-  static const int stepsGoal = 8000;
-  static const int waterGoal = 8;
-  static const int heartRate = 72;
-  static const int energy = 1650;
-  static const int streakDays = 12;
+  static void attach(AppController c) => _c = c;
 
-  static const List<double> weekSteps = [0.52, 0.74, 0.60, 0.90, 0.68, 0.86, 0.55];
-  static const List<double> weekSleep = [0.90, 0.81, 0.98, 0.76, 1.00, 0.93, 0.92];
-  static const List<String> weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  static const List<double> hourly = [
-    0.05, 0.02, 0.00, 0.00, 0.02, 0.08, 0.18, 0.35, 0.50, 0.62, 0.55, 0.48,
-    0.40, 0.45, 0.58, 0.66, 0.72, 0.60, 0.50, 0.42, 0.30, 0.22, 0.12, 0.06,
-  ];
+  static AppController get controller {
+    assert(_c != null, 'AppController not attached yet');
+    return _c!;
+  }
+
+  static bool get ready => _c != null;
+
+  static ValueNotifier<int> get steps => controller.stepsN;
+  static ValueNotifier<int> get water => controller.waterN;
+
+  static int get stepsGoal => controller.settings.stepsGoal;
+  static int get waterGoal => controller.settings.waterGoal;
+  static int get sleepGoalMin => controller.settings.sleepGoalMin;
+
+  static List<double> get weekSteps => controller.weekSteps;
+  static List<double> get weekSleep => controller.weekSleep;
+  static List<int> get weekSleepMinutes => controller.weekSleepMinutes;
+  static List<double> get hourly => controller.hourly;
+  static List<String> get weekLabels => const ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  static int get streakDays => controller.streakDays;
+  static int get avgSteps7 => controller.avgSteps7;
+  static int get todaySleepMin => controller.todaySleepMin;
+  static List<HopEntry> get recentHops => controller.recentHops;
+
+  static bool get firstRunDone => controller.settings.firstRunDone;
+  static bool get demoData => controller.settings.demoData;
 
   static const List<String> tips = [
     'Drink a glass of water before every meal. Ribbit.',
@@ -45,18 +71,3 @@ class HealthData {
     'Breathe in for four counts, out for six. Stay floaty.',
   ];
 }
-
-class HopEntry {
-  final String time;
-  final String label;
-  final ToadIcon icon;
-
-  const HopEntry(this.time, this.label, this.icon);
-}
-
-const List<HopEntry> recentHops = [
-  HopEntry('07:15', 'Morning stretch walk', ToadIcon.walk),
-  HopEntry('12:30', 'Pond-side stroll', ToadIcon.paws),
-  HopEntry('18:05', 'Evening sprint', ToadIcon.run),
-  HopEntry('20:40', 'Lily pad cooldown', ToadIcon.leaf),
-];

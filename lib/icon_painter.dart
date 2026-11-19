@@ -25,6 +25,7 @@ enum ToadIcon {
   chevron,
   sparkle,
   target,
+  lock,
 }
 
 /// Paints a [ToadIcon] with wobbly ink strokes in a 24x24 design space.
@@ -100,6 +101,9 @@ class SketchIconPainter extends CustomPainter {
         break;
       case ToadIcon.target:
         _target(canvas);
+        break;
+      case ToadIcon.lock:
+        _lock(canvas);
         break;
     }
     canvas.restore();
@@ -405,6 +409,22 @@ class SketchIconPainter extends CustomPainter {
     _stroke(canvas, sketchEllipse(const Offset(12, 12), 3.2, 3.2, seed: seed + 1, amp: 0.3),
         width: 0.9);
     canvas.drawCircle(const Offset(12, 12), 1.2, fillPaint(color));
+  }
+
+  void _lock(Canvas canvas) {
+    // Shackle.
+    _stroke(canvas,
+        sketchArc(const Offset(12, 9.5), 4.6, math.pi, math.pi * 1.15, seed: seed, amp: 0.3),
+        width: 0.95);
+    // Body.
+    final body =
+        sketchRoundRect(const Rect.fromLTWH(6, 10, 12, 9.5), radius: 3, seed: seed + 1.5, amp: 0.4);
+    _fillIf(canvas, body, opacity: 0.22);
+    _stroke(canvas, body);
+    canvas.drawCircle(const Offset(12, 14.5), 1.4, fillPaint(color));
+    _stroke(canvas,
+        sketchLine(const Offset(12, 14.5), const Offset(12, 17), seed: seed + 3, amp: 0.2),
+        width: 0.85);
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'charts.dart';
 import 'data.dart';
 import 'icon_painter.dart';
+import 'state/app_services.dart';
 import 'theme.dart';
 import 'toad_painter.dart';
 import 'widgets.dart';
@@ -36,15 +37,12 @@ class _WaterScreenState extends State<WaterScreen> with TickerProviderStateMixin
 
   void _add() {
     HapticFeedback.selectionClick();
-    final v = HealthData.water.value;
-    HealthData.water.value =
-        v + 1 > HealthData.waterGoal ? HealthData.waterGoal : v + 1;
+    AppServices.controller.addWater(1);
     _ripple.forward(from: 0);
   }
 
   void _remove() {
-    final v = HealthData.water.value;
-    HealthData.water.value = v - 1 < 0 ? 0 : v - 1;
+    AppServices.controller.addWater(-1);
   }
 
   @override
