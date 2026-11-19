@@ -78,7 +78,7 @@ class _HomeShellState extends State<HomeShell> with TickerProviderStateMixin {
 class _ToadNavBar extends StatelessWidget {
   final int index;
   final int prev;
-  final Animation<double> hop;
+  final AnimationController hop;
   final Animation<double> idle;
   final ValueChanged<int> onTap;
 

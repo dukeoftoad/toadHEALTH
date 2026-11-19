@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'charts.dart';
 import 'data.dart';
 import 'icon_painter.dart';
 import 'sketchy.dart';

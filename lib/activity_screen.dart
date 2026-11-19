@@ -35,7 +35,8 @@ class _ActivityScreenState extends State<ActivityScreen>
     setState(() {
       _run = run;
       _walk.duration = Duration(milliseconds: run ? 480 : 900);
-      _walk.repeat(from: 0);
+      _walk.value = 0;
+      _walk.repeat();
     });
   }
 
