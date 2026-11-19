@@ -7,25 +7,27 @@ import 'vault_store.dart';
 /// provided by our own channel (Android filesDir, excluded from cloud
 /// backups via android:allowBackup="false"), falling back to a fixed
 /// temp location on desktop debug builds.
+/// Resolves the default native store: app-private dir via our own channel,
+/// falling back to a fixed temp directory on desktop debug builds.
+Future<VaultStore> createDefaultStore() async {
+  Directory dir;
+  final path = await VaultChannel.storageDir();
+  if (path != null && path.isNotEmpty) {
+    dir = Directory(path);
+  } else {
+    dir = Directory(
+        '${Directory.systemTemp.path}${Platform.pathSeparator}toadhealth_vault');
+  }
+  if (!dir.existsSync()) {
+    dir.createSync(recursive: true);
+  }
+  return IoVaultStore(dir);
+}
+
 class IoVaultStore implements VaultStore {
   IoVaultStore(this._dir);
 
   final Directory _dir;
-
-  static Future<VaultStore> createDefaultStore() async {
-    Directory dir;
-    final path = await VaultChannel.storageDir();
-    if (path != null && path.isNotEmpty) {
-      dir = Directory(path);
-    } else {
-      dir = Directory(
-          '${Directory.systemTemp.path}${Platform.pathSeparator}toadhealth_vault');
-    }
-    if (!dir.existsSync()) {
-      dir.createSync(recursive: true);
-    }
-    return IoVaultStore(dir);
-  }
 
   File _file(String name) =>
       File('${_dir.path}${Platform.pathSeparator}$name');

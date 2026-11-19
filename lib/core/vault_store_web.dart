@@ -6,14 +6,15 @@ import 'dart:html' as html;
 
 import 'vault_store.dart';
 
+/// Browser store for the Pages demo - localStorage of sealed blobs.
+Future<VaultStore> createDefaultStore() async {
+  return WebVaultStore();
+}
+
 class WebVaultStore implements VaultStore {
   static const String _prefix = 'toadhealth.';
 
   String _key(String name) => '$_prefix$name';
-
-  static Future<VaultStore> createDefaultStore() async {
-    return WebVaultStore();
-  }
 
   @override
   Future<String?> readText(String name) async {
