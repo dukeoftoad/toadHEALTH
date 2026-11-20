@@ -46,6 +46,16 @@ class WearOs {
     }
   }
 
+  /// Clears the persisted snapshot on every watch running the companion.
+  static Future<bool> clearState() async {
+    if (!isSupported) return false;
+    try {
+      return await _channel.invokeMethod<bool>('clearState') ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// Wear events as maps:
   ///   {ev: nodes,   count}   - connected Data Layer nodes
   ///   {ev: wrist,   count}   - nodes wearing the toadHEALTH companion
