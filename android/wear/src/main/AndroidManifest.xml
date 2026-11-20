@@ -47,5 +47,8 @@
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="false" />
+        <meta-data
+            android:name="com.google.android.wearable.capabilities"
+            android:resource="@array/wearable_capabilities" />
     </application>
 </manifest>
