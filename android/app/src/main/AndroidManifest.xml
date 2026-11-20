@@ -42,5 +42,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="com.google.android.wearable.capabilities"
+            android:resource="@array/wearable_capabilities" />
     </application>
 </manifest>
