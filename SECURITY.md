@@ -17,9 +17,10 @@
 **Protected against:** casual device access, backup extraction (Android cloud
 backup is disabled via `allowBackup="false"`), and file-level exfiltration of
 the phone vault without the device key. The Wear snapshot preferences are
-ciphertext without the watch's Keystore key. A mirror-off clear reaches
-reachable watches; an offline watch may retain encrypted cache data until it
-reconnects and receives that command. The Wear Data Layer's cloud fallback
+ciphertext without the watch's Keystore key. A mirror-off action writes
+a timestamp-only clear marker that the Wear Data Layer buffers for offline
+watches and syncs after reconnection; delayed pre-opt-out snapshots are
+rejected by the watch-side watermark. The Wear Data Layer's cloud fallback
 is documented by Google as end-to-end encrypted, but the transport can still
 use Google-owned infrastructure when Bluetooth is unavailable; this app
 therefore does not claim that all traffic is network-free.
