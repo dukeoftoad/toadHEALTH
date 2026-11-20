@@ -60,8 +60,8 @@ android {
 }
 
 dependencies {
-    // The Wear Data Layer transport: device-to-device messages over the
-    // watch Bluetooth/USB bridge. No cloud endpoint, no account, no data
-    // ever leaves the two paired devices.
+    // The Wear Data Layer uses encrypted Bluetooth when available. If
+    // Bluetooth is unavailable, Google Play services can relay the
+    // end-to-end-encrypted payload through Google-owned cloud servers.
     implementation "com.google.android.gms:play-services-wearable:18.1.0"
 }
