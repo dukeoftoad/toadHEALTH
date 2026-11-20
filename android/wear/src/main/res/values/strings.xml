@@ -9,4 +9,7 @@
     <string name="status_listening">pond listening</string>
     <string name="status_asleep">phone pond asleep</string>
     <string name="status_waiting">waiting for the pond…</string>
+    <string-array name="wearable_capabilities">
+        <item>toadhealth_wrist</item>
+    </string-array>
 </resources>
