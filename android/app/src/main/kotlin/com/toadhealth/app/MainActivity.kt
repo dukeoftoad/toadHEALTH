@@ -48,6 +48,7 @@ class MainActivity : FlutterActivity() {
 
     private var stepListener: SensorEventListener? = null
     private var watchLink: WatchLink? = null
+    private var wearOsBridge: WearOsBridge? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -147,6 +148,7 @@ class MainActivity : FlutterActivity() {
         // ---------- Wear OS companion (Data Layer - see WearOsBridge.kt) ----------
 
         val wearOs = WearOsBridge(this)
+        wearOsBridge = wearOs
 
         MethodChannel(messenger, "toadhealth/wear_os").setMethodCallHandler { call, result ->
             try {
@@ -160,6 +162,7 @@ class MainActivity : FlutterActivity() {
                             result.success(wearOs.sendState(json))
                         }
                     }
+                    "clearState" -> result.success(wearOs.clearState())
                     else -> result.notImplemented()
                 }
             } catch (e: Exception) {
@@ -178,6 +181,14 @@ class MainActivity : FlutterActivity() {
                 wearOs.stop()
             }
         })
+    }
+
+    override fun onDestroy() {
+        stopStepCounter()
+        wearOsBridge?.setSink(null)
+        wearOsBridge?.stop()
+        wearOsBridge = null
+        super.onDestroy()
     }
 
     override fun onRequestPermissionsResult(
