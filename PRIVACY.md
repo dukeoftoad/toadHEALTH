@@ -50,8 +50,10 @@ but verifiable properties of the code in this repository.
 - The wear APK declares no `INTERNET` permission either.
 - The last watch snapshot is stored as AES-GCM ciphertext using a watch-local
   Android Keystore key, not as plaintext preferences. Turning mirroring off
-  sends a clear command to reachable companion nodes; an offline watch cannot
-  receive that command until it reconnects.
+  writes an urgent, timestamp-only clear marker to the Wear Data Layer. Google
+  buffers data items while devices are disconnected and syncs them on
+  reconnection; the watch's timestamp watermark also rejects delayed
+  pre-opt-out snapshot messages.
 
 ## Permissions (Android)
 
