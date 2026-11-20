@@ -35,6 +35,7 @@ class WearOsBridge(private val activity: Activity) :
 
     companion object {
         const val PATH_STATE = "/toad/state"
+        const val PATH_CLEAR = "/toad/clear"
         const val PATH_COMMAND = "/toad/command"
         const val WRIST_CAPABILITY = "toadhealth_wrist"
         private const val TAG = "ToadWearOs"
@@ -122,24 +123,34 @@ class WearOsBridge(private val activity: Activity) :
 
     // ---------- phone -> wrist ----------
 
-    /** Mirrors a pond snapshot JSON to every connected wrist node. */
-    fun sendState(json: String): Boolean {
+    /** Mirrors only to reachable nodes that advertise the wrist companion. */
+    fun sendState(json: String): Boolean =
+        sendToWrist(PATH_STATE, json.toByteArray(Charsets.UTF_8))
+
+    /** Removes the cached health snapshot from every reachable wrist companion. */
+    fun clearState(): Boolean = sendToWrist(PATH_CLEAR, byteArrayOf())
+
+    private fun sendToWrist(path: String, bytes: ByteArray): Boolean {
         if (!isSupported()) return false
-        val bytes = json.toByteArray(Charsets.UTF_8)
         val client = messageClient ?: return false
+        val capabilities = capabilityClient ?: return false
         return try {
-            nodeClient?.getConnectedNodes()?.addOnSuccessListener { nodes ->
-                for (node in nodes) {
-                    try {
-                        client.sendMessage(node.id, PATH_STATE, bytes)
-                    } catch (e: Exception) {
-                        Log.w(TAG, "sendState to ${node.id} failed", e)
-                    }
+            capabilities.getCapability(
+                WRIST_CAPABILITY,
+                CapabilityClient.FILTER_REACHABLE,
+            ).addOnSuccessListener { info ->
+                for (node in info.nodes) {
+                    client.sendMessage(node.id, path, bytes)
+                        .addOnFailureListener { error ->
+                            Log.w(TAG, "message $path to ${node.id} failed", error)
+                        }
                 }
+            }.addOnFailureListener { error ->
+                Log.w(TAG, "Could not locate reachable wrist companions", error)
             }
             true
         } catch (e: Throwable) {
-            Log.w(TAG, "sendState failed", e)
+            Log.w(TAG, "message $path failed", e)
             false
         }
     }
