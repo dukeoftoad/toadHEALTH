@@ -1,15 +1,17 @@
 # Architecture
 
-toadHEALTH is a **local-first** health companion. There is no backend server,
-no account system, and the Android build requests **no INTERNET permission at
-all** - records physically cannot leave the device. "Real backend" here means
-a real, layered, encrypted on-device backend, architected like a production
-app rather than a demo.
+toadHEALTH is a **local-first** health companion with no toadHEALTH-operated
+backend or account system. The phone and Wear app source manifests do not
+request **INTERNET permission**. However, the opt-in Wear OS Data Layer is
+provided by Google Play services and can relay messages through Google-owned
+cloud servers when Bluetooth is unavailable; Google documents that fallback
+as end-to-end encrypted. "Real backend" here means a real, layered, encrypted
+on-device store, not a first-party server.
 
 ## Principles
 
-1. **Local-first** - the device is the source of truth. Nothing syncs, nothing phones home.
-2. **Zero third-party trust** - no Firebase, no Google Play Services, no analytics, no ad SDKs. The only runtime dependency beyond Flutter is the pure-Dart `cryptography` package.
+1. **Local-first** - the phone is the source of truth. Wear mirroring is opt-in and sends snapshots only to the paired companion.
+2. **No first-party backend or telemetry** - no Firebase, analytics, or ad SDKs. The optional Wear OS path requires Google Play services and may use its encrypted cloud relay when Bluetooth is unavailable.
 3. **Honest data** - every number on screen is measured (hardware step counter) or explicitly logged by the user. The only fake data is an opt-in, clearly-labelled, one-tap-erasable "demo pond".
 4. **Hand-drawn everything** - all UI is painted at runtime by the sketchy ink engine; no icon fonts, no stock vectors.
 
@@ -119,10 +121,10 @@ blobs).
 - **ADR-4: recovery code instead of "forgot password" email.** A 120-bit
   base32 code shown once at password creation; it unwraps the same DEK and
   re-keys the password credential. No server, no email, no identity.
-- **ADR-5: hand-written platform channels, not plugins.** Step counter and
-  Keystore live in one Kotlin file (~150 lines) inside MainActivity. This
-  keeps the dependency surface at exactly one pure-Dart package and makes the
-  privacy audit trivial.
+- **ADR-5: hand-written platform channels, not Flutter plugins.** Step
+  counter, Keystore and watch bridges live in our Kotlin code. The optional
+  Wear OS companion adds the `play-services-wearable` Android dependency;
+  its cloud-relay behavior is documented in ADR-10 and PRIVACY.md.
 - **ADR-6: JSON vault document with schema version.** A health tracker's data
   volume (KBs per year) does not justify SQLCipher's native footprint for
   v1.1; the repository interface is the seam where SQL/remote backends can
@@ -142,16 +144,17 @@ blobs).
   clearly-labelled demo buddy covers emulators and the web build. Heartbeat
   samples are session-only and are never persisted into the vault.
 - **ADR-10: the Wear OS companion is an opt-in Data Layer app, not a silent
-  dependency.** BLE GATT (ADR-9) reads FROM a watch; a companion runs ON the
-  watch. The `android/wear` Gradle module is a tiny native Kotlin app (no
-  Flutter engine, ~600 lines total) that mirrors pond snapshots and sends
-  quick logs back over the Wear Data Layer - a device-to-device transport
-  between the two paired gadgets only; no cloud endpoint exists in the
-  protocol. The phone still declares no INTERNET permission and the mirror
-  is off by default (`settings.wearMirror`, persisted in the vault). On ROMs
-  without Play Services the bridge reports unsupported and everything else
-  keeps hopping - the de-Googled core does not depend on it. Snapshots are
-  coalesced (>= 900 ms) so step bursts do not hammer the wrist.
+  dependency.** BLE GATT (ADR-9) remains a direct Bluetooth heart-rate path.
+  The `android/wear` Gradle module is a tiny native Kotlin app (no Flutter
+  engine) that mirrors pond snapshots and sends quick logs through the Wear
+  Data Layer. That transport uses an encrypted Bluetooth connection when
+  available. If Bluetooth is unavailable, Google Play services can route
+  payloads through Google-owned cloud servers; Google documents the cloud
+  path as end-to-end encrypted. toadHEALTH runs no backend of its own, but
+  mirrored data may transit Google infrastructure. The mirror is off by
+  default (`settings.wearMirror`, persisted in the vault). On devices without
+  Play Services the bridge reports unsupported. Snapshots are coalesced
+  (>= 900 ms) so step bursts do not hammer the wrist.
 
 ## Extending
 
