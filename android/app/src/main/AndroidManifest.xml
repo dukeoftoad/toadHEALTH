@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!--
-      Watch link (feature/wear-os-watch-link): plain BLE GATT to the standard
-      Heart Rate Profile. Still NO INTERNET permission - watch readings are
-      read directly over Bluetooth and stay on the device.
+      BLE heart-rate link: direct GATT to the standard Heart Rate Profile;
+      this path itself uses Bluetooth. The separate opt-in Wear Data Layer
+      can use Google's encrypted cloud relay; see PRIVACY.md.
     -->
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
