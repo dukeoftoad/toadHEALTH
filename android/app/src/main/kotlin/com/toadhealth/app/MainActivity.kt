@@ -21,8 +21,9 @@ import javax.crypto.spec.GCMParameterSpec
 /**
  * toadHEALTH native bridge.
  *
- * Three privacy-critical jobs, all implemented in-house with zero
- * third-party plugins and zero Google Play Services:
+ * The vault, step sensor and BLE heart-rate link are implemented in-house.
+ * The optional Wear OS companion uses Google's Wear Data Layer and Play
+ * services; its Bluetooth/cloud relay behavior is documented in PRIVACY.md.
  *
  *  1. "toadhealth/vault"  - hardware-backed AES-256-GCM key vault
  *     (Android Keystore generates and guards the key; the key material
