@@ -13,4 +13,7 @@
     <color name="wrist_pond">#6FB7C4</color>
     <color name="wrist_sun">#EFB03F</color>
     <color name="adaptive_bg">#31402B</color>
+    <!-- The adaptive-icon XMLs are copied from the phone app and point at
+         @color/ic_launcher_background; define it here too. -->
+    <color name="ic_launcher_background">#31402B</color>
 </resources>
