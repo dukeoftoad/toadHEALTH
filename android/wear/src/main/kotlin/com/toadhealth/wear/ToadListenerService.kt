@@ -1,7 +1,6 @@
 package com.toadhealth.wear
 
 import com.google.android.gms.wearable.MessageEvent
-import com.google.android.gms.wearable.Wearable
 import com.google.android.gms.wearable.WearableListenerService
 
 /**
@@ -13,21 +12,13 @@ import com.google.android.gms.wearable.WearableListenerService
  */
 class ToadListenerService : WearableListenerService() {
 
-    override fun onCreate() {
-        super.onCreate()
-        // Announce the wrist capability at runtime instead of via a wear.xml
-        // resource - the phone then knows a wrist actually wears the toad
-        // (a paired watch alone is not enough).
-        try {
-            Wearable.getCapabilityClient(this).addLocalCapability(WRIST_CAPABILITY)
-        } catch (_: Exception) {
-        }
-    }
-
     override fun onMessageReceived(event: MessageEvent) {
-        if (event.path == "/toad/state") {
-            val json = String(event.data, Charsets.UTF_8)
-            ToadStateStore.save(this, json)
+        when (event.path) {
+            "/toad/state" -> {
+                val json = String(event.data, Charsets.UTF_8)
+                ToadStateStore.save(this, json)
+            }
+            "/toad/clear" -> ToadStateStore.clear(this)
         }
     }
 
