@@ -50,7 +50,11 @@ class WearOs {
   static Future<bool> clearState() async {
     if (!isSupported) return false;
     try {
-      return await _channel.invokeMethod<bool>('clearState') ?? false;
+      return await _channel.invokeMethod<bool>(
+            'clearState',
+            {'ts': DateTime.now().millisecondsSinceEpoch},
+          ) ??
+          false;
     } catch (_) {
       return false;
     }
