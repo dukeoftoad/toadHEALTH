@@ -22,7 +22,4 @@ class ToadListenerService : WearableListenerService() {
         }
     }
 
-    companion object {
-        const val WRIST_CAPABILITY = "toadhealth_wrist"
-    }
 }
