@@ -39,7 +39,14 @@
                 <data
                     android:scheme="wear"
                     android:host="*"
-                    android:pathPrefix="/toad/" />
+                    android:pathPrefix="/toad/state" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:scheme="wear"
+                    android:host="*"
+                    android:path="/toad/clear" />
             </intent-filter>
         </service>
 
