@@ -21,12 +21,13 @@ dev_dependencies:
 
 # The app icon is drawn to match the in-app toad: wobbly ink outlines,
 # swamp green body, cream belly, coral cheek - mid-gallop with a heart.
+# flutter_launcher_icons insets the full-bleed artwork by 16% for the
+# adaptive foreground, landing the toad inside the launcher safe zone.
 flutter_launcher_icons:
   image_path: 'assets/images/app_icon.png'
   android: true
   ios: false
   adaptive_icon_background: '#F0E3C1'
-  adaptive_icon_foreground: 'assets/images/app_icon_foreground.png'
 
 flutter:
   uses-material-design: true
