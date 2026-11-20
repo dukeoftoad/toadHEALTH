@@ -8,7 +8,6 @@ import com.google.android.gms.wearable.CapabilityClient
 import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
-import com.google.android.gms.wearable.Node
 import com.google.android.gms.wearable.NodeClient
 import com.google.android.gms.wearable.Wearable
 import io.flutter.plugin.common.EventChannel
@@ -90,14 +89,10 @@ class WearOsBridge(private val activity: Activity) :
         if (started) return
         started = true
         tryOrNull { messageClient?.addListener(this) }
-        tryOrNull { capabilityClient?.addListener(this, WRIST_CAPABILITY, CapabilityClient.FILTER_ALL) }
-        tryOrNull {
-            nodeClient?.addListener { nodes ->
-                emit(mapOf("ev" to "nodes", "count" to nodes.size))
-            }
-        }
-        // Report once so Dart knows the state without polling.
-        emit(mapOf("ev" to "nodes", "count" to connectedNodeCount()))
+        tryOrNull { capabilityClient?.addListener(this, WRIST_CAPABILITY) }
+        // Initial snapshot: connected nodes + wrists wearing the companion.
+        pollNodes()
+        pollWristCapability()
     }
 
     fun stop() {
@@ -107,13 +102,22 @@ class WearOsBridge(private val activity: Activity) :
         tryOrNull { capabilityClient?.removeListener(this) }
     }
 
-    private fun connectedNodeCount(): Int {
-        return tryOrNull {
-            nodeClient?.connectedNodes?.let { future ->
-                // Best effort synchronous peek; the async listener corrects us.
-                if (future.isDone) future.get().size else -1
+    private fun pollNodes() {
+        tryOrNull {
+            nodeClient?.getConnectedNodes()?.addOnSuccessListener { nodes ->
+                emit(mapOf("ev" to "nodes", "count" to nodes.size))
             }
-        } ?: -1
+        }
+    }
+
+    private fun pollWristCapability() {
+        tryOrNull {
+            capabilityClient
+                ?.getCapability(WRIST_CAPABILITY, CapabilityClient.FILTER_ALL)
+                ?.addOnSuccessListener { info ->
+                    emit(mapOf("ev" to "wrist", "count" to info.nodes.size))
+                }
+        }
     }
 
     // ---------- phone -> wrist ----------
@@ -124,7 +128,7 @@ class WearOsBridge(private val activity: Activity) :
         val bytes = json.toByteArray(Charsets.UTF_8)
         val client = messageClient ?: return false
         return try {
-            nodeClient?.connectedNodes?.addOnSuccessListener { nodes ->
+            nodeClient?.getConnectedNodes()?.addOnSuccessListener { nodes ->
                 for (node in nodes) {
                     try {
                         client.sendMessage(node.id, PATH_STATE, bytes)
@@ -150,6 +154,6 @@ class WearOsBridge(private val activity: Activity) :
     }
 
     override fun onCapabilityChanged(info: CapabilityInfo) {
-        emit(mapOf("ev" to "wrist", "count" to info.connectedNodes.size))
+        emit(mapOf("ev" to "wrist", "count" to info.nodes.size))
     }
 }

@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.wear.ambient.AmbientModeSupport
 import com.google.android.gms.wearable.Wearable
 import org.json.JSONObject
-import java.text.SimpleDateFormat
 import java.util.Locale
 
 /**
@@ -36,8 +35,6 @@ class WearActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
     private var lastHrOn = false
     private var lastStateTs = 0L
     private var localWater = 0
-
-    private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private val freshState = { json: String -> runOnUiThread { render(json) } }
 
@@ -69,6 +66,15 @@ class WearActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wear)
         AmbientModeSupport.attach(this)
+
+        // Announce the wrist capability from the foreground path too, so the
+        // phone sees the toad even if the background service was never started.
+        try {
+            Wearable.getCapabilityClient(this).addLocalCapability(
+                ToadListenerService.WRIST_CAPABILITY,
+            )
+        } catch (_: Exception) {
+        }
 
         toad = findViewById(R.id.toad)
         stepsValue = findViewById(R.id.steps_value)
