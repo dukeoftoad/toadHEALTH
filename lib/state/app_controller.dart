@@ -116,6 +116,9 @@ class AppController extends ChangeNotifier {
     String action,
     Map<String, Object?> args,
   ) async {
+    // A delayed/in-flight Data Layer message must not mutate data after the
+    // user has disabled the wrist mirror.
+    if (!settings.wearMirror) return;
     switch (action) {
       case 'log_water':
         final glasses = ((args['glasses'] as num?)?.toInt() ?? 1).clamp(1, 5);
@@ -131,6 +134,7 @@ class AppController extends ChangeNotifier {
   /// Toggles the wrist mirror (persisted with the rest of the vault).
   /// refresh() below queues the first snapshot for the wrist.
   Future<void> setWearMirror(bool on) async {
+    if (!on) wearos.clearMirror();
     final s = settings..wearMirror = on;
     repo.settings = s;
     repo.addEntry('security', on ? 'wrist mirror on' : 'wrist mirror off');
