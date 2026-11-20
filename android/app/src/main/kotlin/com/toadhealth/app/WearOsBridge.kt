@@ -23,11 +23,11 @@ import io.flutter.plugin.common.EventChannel
  *       - phone -> watch  /toad/state    JSON pond snapshots (mirror)
  *       - watch -> phone  /toad/command  quick logs and pings from the wrist
  *
- * Privacy note: the Data Layer is a transport pipe between the two paired
- * devices over Bluetooth/USB - no cloud endpoint is involved, and the phone
- * app still declares no INTERNET permission. When Google Play Services are
- * absent (de-Googled ROMs) the bridge reports isSupported=false and every
- * other feature keeps working untouched.
+ * Privacy note: the Data Layer uses encrypted Bluetooth when available.
+ * If Bluetooth is unavailable, Google Play services can relay the payload
+ * through Google-owned cloud servers; Google documents that fallback as
+ * end-to-end encrypted. The app does not operate its own backend. When
+ * Play Services are absent, the bridge reports isSupported=false.
  */
 class WearOsBridge(private val activity: Activity) :
     MessageClient.OnMessageReceivedListener,
