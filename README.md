@@ -47,6 +47,10 @@ backend - see [ARCHITECTURE.md](ARCHITECTURE.md):
 - **Hand-drawn everything** - a deterministic ink-wobble engine powers every
   line, circle, blob, chart and icon.
 - **The toad mascot** - five live-animated poses: idle, walk, run, sleep, cheer.
+- **The launcher icon is the toad too** - a hand-inked *running toad* (mid
+  gallop, speed lines, a little heart) stamped into every Android launcher
+  density: legacy icons plus an adaptive foreground/background pair.
+  Regenerate after artwork changes with `dart run flutter_launcher_icons`.
 - **Toad navigation** - the bottom nav is a pond the toad hops across.
 - **Flowing transitions** - screens drift in like lily pads.
 - **Handwritten typography** - Caveat and Gochi Hand bundled locally.
