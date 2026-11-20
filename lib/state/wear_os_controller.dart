@@ -22,6 +22,7 @@ class WearOsController extends ChangeNotifier {
 
   StreamSubscription<Map<Object?, Object?>>? _sub;
   bool _listening = false;
+  bool _disposed = false;
 
   // Mirroring bookkeeping: snapshots are coalesced so a burst of sensor
   // events (each step!) still lands on the wrist at a calm cadence.
@@ -40,12 +41,14 @@ class WearOsController extends ChangeNotifier {
     _listening = true;
     _sub = stream.listen(_onEvent, onError: (_) {});
     WearOs.playServicesAvailable().then((ok) {
+      if (_disposed) return;
       if (!ok) status = WearOsStatus.unsupported;
       notifyListeners();
     });
   }
 
   void _onEvent(Map<Object?, Object?> event) {
+    if (_disposed) return;
     switch (event['ev']) {
       case 'nodes':
         wrists = (event['count'] as num?)?.toInt() ?? wrists;
@@ -87,7 +90,7 @@ class WearOsController extends ChangeNotifier {
 
   /// Queues a pond snapshot for the wrist; coalesced and throttled.
   void mirror(Map<String, Object?> snapshot) {
-    if (status == WearOsStatus.unsupported || !WearOs.isSupported) return;
+    if (_disposed || status == WearOsStatus.unsupported || !WearOs.isSupported) return;
     _pending = snapshot;
     final elapsed = DateTime.now().difference(_lastSent);
     if (elapsed >= _minInterval) {
@@ -98,6 +101,7 @@ class WearOsController extends ChangeNotifier {
   }
 
   void _send() {
+    if (_disposed) return;
     _flush?.cancel();
     _flush = null;
     final payload = _pending;
@@ -107,14 +111,25 @@ class WearOsController extends ChangeNotifier {
     WearOs.sendState(payload);
   }
 
+  /// Clears queued snapshots and asks the wrist companion to erase its cache.
+  /// Called as soon as the user turns mirroring off.
+  void clearMirror() {
+    _flush?.cancel();
+    _flush = null;
+    _pending = null;
+    WearOs.clearState();
+  }
+
   /// One-shot immediate push (used after unlocking / toggling the mirror).
   void mirrorNow(Map<String, Object?> snapshot) {
+    if (_disposed) return;
     _pending = snapshot;
     _send();
   }
 
   @override
   void dispose() {
+    _disposed = true;
     _sub?.cancel();
     _flush?.cancel();
     super.dispose();
