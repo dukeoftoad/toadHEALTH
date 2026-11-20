@@ -54,7 +54,7 @@ jobs:
       - name: Collect APKs
         run: |
           cp build/app/outputs/flutter-apk/app-release.apk toadHEALTH.apk
-          cp android/wear/build/outputs/apk/release/wear-release.apk toadHEALTH-wear.apk
+          cp build/wear/outputs/apk/release/wear-release.apk toadHEALTH-wear.apk
 
       - name: Upload phone release APK artifact
         uses: actions/upload-artifact@v4
