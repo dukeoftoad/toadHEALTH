@@ -99,6 +99,10 @@ object ToadStateStore {
         val clearBefore = prefs.getLong(KEY_CLEAR_BEFORE, 0L)
         if (incoming.isEmpty || incoming.ts <= clearBefore) return
 
+        // The service can be restarted independently of the UI process.
+        // Load the encrypted current snapshot before comparing timestamps so
+        // a delayed older message cannot overwrite a newer persisted snapshot.
+        if (lastJson == null && prefs.contains(KEY_STATE)) load(context)
         val current = lastJson?.let { parseState(it) }
         if (current != null && current.ts > incoming.ts) return
 
