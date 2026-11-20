@@ -8,7 +8,9 @@ import com.google.android.gms.wearable.WearableListenerService
  * phone while the wrist app is closed and stores them via
  * [ToadStateStore], so the next cold start of [WearActivity] shows the
  * mirrored pond immediately. No notification, no vibration, no data
- * leaves the watch - the toad quietly keeps the snapshot warm.
+ * leaves the watch - the toad quietly keeps the snapshot warm. The wrist
+ * sends only explicit quick-log/ping commands back to the phone; Play
+ * Services may relay those messages using its documented encrypted fallback.
  */
 class ToadListenerService : WearableListenerService() {
 
