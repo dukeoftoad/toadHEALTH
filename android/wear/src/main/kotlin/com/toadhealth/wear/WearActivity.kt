@@ -11,13 +11,15 @@ import org.json.JSONObject
 /**
  * The wrist side of toadHEALTH: a compact pond view that mirrors the phone.
  *
- * Data flow (all device-to-device over the Wear Data Layer):
+ * Data flow through the Wear Data Layer:
  *   phone  --/toad/state-->  wrist    snapshots of steps / water / sleep / hr
  *   wrist  --/toad/command--> phone    quick logs (+1 glass) and pings
  *
- * The activity is a thin shell: state arrives through the background
- * [ToadListenerService], which hands fresh payloads straight here while the
- * activity is on screen. Everything stays on the two paired devices.
+ * The Data Layer uses encrypted Bluetooth when available. Google Play
+ * services can relay end-to-end-encrypted payloads through Google-owned
+ * cloud servers when Bluetooth is unavailable. State arrives through the
+ * background [ToadListenerService], which hands fresh payloads to this
+ * activity while it is on screen.
  *
  * Deliberately plain android.app.Activity: the wrist app links zero AAR
  * resources, so the aapt2 link only ever sees framework + local resources.
