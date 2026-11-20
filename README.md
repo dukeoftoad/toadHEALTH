@@ -37,10 +37,13 @@ backend - see [ARCHITECTURE.md](ARCHITECTURE.md):
   account, no email, no server.
 - **Portable encrypted backups** - `TOAD1:` backup codes are pure ciphertext
   under your own passphrase. Store them anywhere.
-- **Zero network** - the Android manifest declares **no INTERNET permission**;
-  `allowBackup="false"` keeps the vault out of Google Drive backups.
-  See [PRIVACY.md](PRIVACY.md) for the full de-Googling checklist and
-  [SECURITY.md](SECURITY.md) for the threat model.
+- **No first-party backend** - toadHEALTH does not run a health-data
+  server, and its phone/watch source manifests do not request
+  **`INTERNET` permission**. The opt-in Wear OS Data Layer is provided by
+  Google Play services: it uses encrypted Bluetooth when available and may
+  relay end-to-end-encrypted payloads through Google-owned cloud servers when
+  Bluetooth is unavailable. `allowBackup="false"` keeps the local vault out
+  of Android backup. See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md).
 
 ## The toad is the body of the app
 
@@ -76,9 +79,11 @@ The smart-watch feature keeps the project's promises:
   `0x2A37`, BPM notifications) and Battery Service (`0x180F` -> `0x2A19`).
   Wear OS watches expose these while sharing their sensor; most BLE
   heart-rate straps always do.
-- **Still de-Googled** - no Play Services dependency, no Wear Data Layer,
-  and the manifest still has **no INTERNET permission**; BLE permissions
-  carry `neverForLocation`.
+- **The BLE heart-rate path stays direct** - it uses no Play Services or
+  Wear Data Layer and requests no Internet permission in the app manifest;
+  BLE permissions carry `neverForLocation`. This is separate from the
+  optional Wear OS companion described below, which uses Google's Data Layer
+  and its documented encrypted cloud-relay fallback.
 - **Honest states** - scanning radar, hop-over handshake, live BPM ring,
   sparkline, battery, zone copy. Errors tell you what actually went wrong
   (permission, Bluetooth off, no heart-rate service).
@@ -105,10 +110,12 @@ talks back.
   on wrist wake pulls a fresh snapshot. A background listener keeps the
   last pond state warm so the companion opens instantly.
 - **Opt-in and honest** - the mirror is off by default and the toggle is
-  persisted in the encrypted vault. The Data Layer is a device-to-device
-  transport between your phone and your watch; the phone app still declares
-  **no INTERNET permission**. On de-Googled ROMs without Play Services the
-  card reports "unsupported" and everything else keeps hopping.
+  persisted in the encrypted vault. The Wear Data Layer uses encrypted
+  Bluetooth when available; if Bluetooth is unavailable, Google Play services
+  can relay the payload through Google-owned cloud servers. Google documents
+  that fallback as end-to-end encrypted. toadHEALTH runs no backend of its
+  own, but mirrored data may transit Google infrastructure. On de-Googled
+  ROMs without Play Services the card reports "unsupported".
 - **The BLE heart-rate buddy stays** - Pond Watch's GATT link (below) is
   untouched; the two watch features are independent and complementary.
 
@@ -118,7 +125,7 @@ mirror toggle on the phone.
 
 ## Getting started
 
-Requires Flutter 3.22+ (any channel).
+Requires Flutter 3.50+ stable. Android phone and Wear modules compile and target API 37 (AGP 9.3.1, Gradle 9.5.0, Java 17).
 
 ```bash
 flutter pub get
