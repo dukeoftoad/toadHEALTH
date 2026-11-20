@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.widget.Button
 import android.widget.TextView
-import com.google.android.gms.wearable.Wearable
 import org.json.JSONObject
 
 /**
@@ -38,25 +37,27 @@ class WearActivity : Activity() {
 
     private var lastWater = 0
     private var lastQuarters = 0
-    private var lastArrivalElapsed = 0L
     private var localWater = 0
 
     private val freshState = { json: String -> runOnUiThread { render(json) } }
+    private val clearedState = {
+        runOnUiThread {
+            lastWater = 0
+            localWater = 0
+            lastQuarters = 0
+            stepsValue.text = "—"
+            waterValue.text = "—"
+            sleepValue.text = "—"
+            hrValue.text = "—"
+            statusLine.setText(R.string.status_asleep)
+        }
+    }
 
     // ---------- lifecycle ----------
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wear)
-
-        // Announce the wrist capability from the foreground path too, so the
-        // phone sees the toad even if the background service never started.
-        try {
-            Wearable.getCapabilityClient(this).addLocalCapability(
-                ToadListenerService.WRIST_CAPABILITY,
-            )
-        } catch (_: Exception) {
-        }
 
         toad = findViewById(R.id.toad)
         stepsValue = findViewById(R.id.steps_value)
@@ -80,6 +81,7 @@ class WearActivity : Activity() {
         super.onResume()
         ToadStateStore.activityListening = true
         ToadStateStore.onFreshState = freshState
+        ToadStateStore.onCleared = clearedState
         ToadStateStore.load(this)
         ToadStateStore.lastJson?.let { render(it) }
         // Ask the phone pond for a fresh snapshot (it replies with /toad/state).
@@ -89,6 +91,7 @@ class WearActivity : Activity() {
     override fun onPause() {
         ToadStateStore.activityListening = false
         ToadStateStore.onFreshState = null
+        ToadStateStore.onCleared = null
         super.onPause()
     }
 
@@ -136,11 +139,11 @@ class WearActivity : Activity() {
         if (quarters > lastQuarters) toad.celebrate()
         lastQuarters = quarters
 
-        val fresh = SystemClock.elapsedRealtime() - lastArrivalElapsed < 35_000
+        val ageMs = System.currentTimeMillis() - state.ts
+        val fresh = state.ts > 0L && ageMs in 0L..35_000L
         statusLine.setText(
             if (fresh) R.string.status_listening else R.string.status_asleep,
         )
-        lastArrivalElapsed = SystemClock.elapsedRealtime()
     }
 
     private fun compact(value: Int): String {
