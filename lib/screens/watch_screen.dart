@@ -742,7 +742,7 @@ class _WatchScreenState extends State<WatchScreen>
                           ? (lastCmd != null
                               ? 'last wrist action: ${wearos.lastCommand}'
                               : 'the wrist sees your steps, water, sleep')
-                          : 'off - nothing leaves the phone',
+                          : 'off - wrist cache cleared when reachable',
                       style: ToadText.label,
                     ),
                   ),
