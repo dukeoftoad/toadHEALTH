@@ -9,14 +9,21 @@
 | App password | PBKDF2-HMAC-SHA256, 250,000 iterations, random 16-byte salt; only the wrapped DEK is stored |
 | Recovery code | 120-bit base32 code; wraps the same DEK under its own PBKDF2 credential |
 | Backups | `TOAD1:` payload = PBKDF2(passphrase) -> AES-256-GCM; passphrase never touches disk |
-| Network egress | Impossible on Android: the manifest declares **no INTERNET permission**. No third-party SDKs exist in the binary. |
+| Wear OS cache | Mirrored snapshot is AES-256-GCM encrypted in app-private preferences with a watch-local Android Keystore key; mirror-off sends a remote clear command |
+| Network egress | The phone and watch source manifests do not request **INTERNET permission**. However, the opt-in Wear Data Layer is provided by Google Play services and can relay messages through Google-owned servers when Bluetooth is unavailable; Google documents the cloud payload as end-to-end encrypted. |
 
 ## Threat model (honest scope)
 
 **Protected against:** casual device access, backup extraction (Android cloud
-backup is disabled via `allowBackup="false"`), file-level exfiltration of the
-app's data without the device key, and any form of network interception (there
-is no network).
+backup is disabled via `allowBackup="false"`), and file-level exfiltration of
+the phone vault without the device key. The Wear snapshot preferences are
+ciphertext without the watch's Keystore key. A mirror-off action writes
+a timestamp-only clear marker that the Wear Data Layer buffers for offline
+watches and syncs after reconnection; delayed pre-opt-out snapshots are
+rejected by the watch-side watermark. The Wear Data Layer's cloud fallback
+is documented by Google as end-to-end encrypted, but the transport can still
+use Google-owned infrastructure when Bluetooth is unavailable; this app
+therefore does not claim that all traffic is network-free.
 
 **Not protected against:** a rooted/compromised OS reading memory while the
 vault is unlocked, a screen observer while you type the password, or someone

@@ -8,6 +8,7 @@ import '../data/models.dart';
 import '../data/repository.dart';
 import '../data/vault_service.dart';
 import 'watch_controller.dart';
+import 'wear_os_controller.dart';
 
 /// Single source of truth for the UI. Reads and writes REAL records through
 /// [HealthRepository]; every change is persisted (debounced) into the
@@ -20,6 +21,9 @@ class AppController extends ChangeNotifier {
 
   /// Smart-watch link state (BLE GATT heart-rate buddy).
   final WatchController watch = WatchController();
+
+  /// Wear OS companion state (Data Layer mirror + wrist commands).
+  final WearOsController wearos = WearOsController();
 
   final ValueNotifier<int> stepsN = ValueNotifier<int>(0);
   final ValueNotifier<int> waterN = ValueNotifier<int>(0);
@@ -84,7 +88,58 @@ class AppController extends ChangeNotifier {
     streakDays = _computeStreak();
     recentHops = repo.recentEntries(6);
 
+    _mirrorToWrist();
+
     notifyListeners();
+  }
+
+  /// Mirrors the pond snapshot to paired Wear OS wrists (feature/wear-os).
+  /// Only while the user's mirror toggle is on; coalesced inside the
+  /// controller so step bursts stay calm on the wrist.
+  void _mirrorToWrist() {
+    if (!repo.settings.wearMirror) return;
+    wearos.mirror({
+      'steps': stepsN.value,
+      'stepsGoal': repo.settings.stepsGoal,
+      'water': waterN.value,
+      'waterGoal': repo.settings.waterGoal,
+      'sleepMin': todaySleepMin,
+      'sleepGoalMin': repo.settings.sleepGoalMin,
+      'hr': watch.bpm,
+      'hrOn': watch.connected,
+      'ts': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
+  /// Wrist commands land here (wired by AppServices.boot).
+  Future<void> handleWristCommand(
+    String action,
+    Map<String, Object?> args,
+  ) async {
+    // A delayed/in-flight Data Layer message must not mutate data after the
+    // user has disabled the wrist mirror.
+    if (!settings.wearMirror) return;
+    switch (action) {
+      case 'log_water':
+        final glasses = ((args['glasses'] as num?)?.toInt() ?? 1).clamp(1, 5);
+        await addWater(glasses);
+        break;
+      case 'ping':
+        // The wrist wants a fresh snapshot: refresh re-mirrors.
+        refresh();
+        break;
+    }
+  }
+
+  /// Toggles the wrist mirror (persisted with the rest of the vault).
+  /// refresh() below queues the first snapshot for the wrist.
+  Future<void> setWearMirror(bool on) async {
+    if (!on) wearos.clearMirror();
+    final s = settings..wearMirror = on;
+    repo.settings = s;
+    repo.addEntry('security', on ? 'wrist mirror on' : 'wrist mirror off');
+    _touch();
+    refresh();
   }
 
   /// A day counts toward the hop streak if any real activity was logged.
@@ -215,6 +270,11 @@ class AppController extends ChangeNotifier {
     } on FormatException {
       return false;
     }
+    // A restored vault must not silently re-enable the optional Wear Data
+    // Layer from an older backup; the user can opt in again explicitly.
+    final restoredSettings = settings..wearMirror = false;
+    repo.settings = restoredSettings;
+    wearos.clearMirror();
     await repo.save();
     refresh();
     return true;
@@ -226,6 +286,8 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> wipeData() async {
+    // Erase the remote wrist snapshot along with the phone vault.
+    wearos.clearMirror();
     repo.reset();
     await _vault.wipeEverything();
     await repo.save();
@@ -262,6 +324,7 @@ class AppController extends ChangeNotifier {
     _saveTimer?.cancel();
     _sensorSub?.cancel();
     watch.dispose();
+    wearos.dispose();
     stepsN.dispose();
     waterN.dispose();
     super.dispose();

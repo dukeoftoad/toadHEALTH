@@ -8,6 +8,7 @@ import '../icon_painter.dart';
 import '../sketchy.dart';
 import '../state/app_services.dart';
 import '../state/watch_controller.dart';
+import '../state/wear_os_controller.dart';
 import '../theme.dart';
 import '../toad_painter.dart';
 import '../widgets.dart';
@@ -114,6 +115,8 @@ class _WatchScreenState extends State<WatchScreen>
                         _buildConnecting(watch.device?.name ?? 'your buddy'),
                       WatchLinkState.connected => _buildConnected(watch),
                     },
+                    const SizedBox(height: 12),
+                    _buildWearOsCard(),
                     const SizedBox(height: 12),
                     _buildPrivacyNote(),
                   ],
@@ -594,9 +597,9 @@ class _WatchScreenState extends State<WatchScreen>
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Heartbeats and hops stay inside the vault, sealed with '
-                    'AES-256. The buddy link is Bluetooth-only - no cloud, '
-                    'no Google, no wires.',
+                    'Heart-rate samples from this BLE buddy are session-only. '
+                    'The separate opt-in Wear OS mirror uses Google’s Data Layer; '
+                    'its encrypted payloads may be relayed through Google Cloud.',
                     style: ToadText.body,
                   ),
                 ),
@@ -620,11 +623,135 @@ class _WatchScreenState extends State<WatchScreen>
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 4),
       child: Text(
-        'The watch link speaks the standard Bluetooth heart-rate profile '
-        '(no Google Wear layer, no Play Services, no network). '
-        'Readings never leave this device.',
+        'The BLE heart-rate link is direct Bluetooth. The optional Wear OS '
+        'mirror uses Google Play services: encrypted Bluetooth when available, '
+        'or an end-to-end-encrypted Google Cloud relay when it is not.',
         style: ToadText.label,
       ),
+    );
+  }
+
+  /// The Wear OS companion card (feature/wear-os): mirror toggle, wrist
+  /// status and a short explanation of what the wrist can do.
+  Widget _buildWearOsCard() {
+    final wearos = AppServices.wearos;
+    final controller = AppServices.controller;
+    return AnimatedBuilder(
+      animation: wearos,
+      builder: (context, _) {
+        final mirrorOn = controller.settings.wearMirror;
+        final String statusLine;
+        switch (wearos.status) {
+          case WearOsStatus.unsupported:
+            statusLine = 'No Play Services on this phone - the wrist link '
+                'stays off. Everything else keeps hopping.';
+            break;
+          case WearOsStatus.unknown:
+          case WearOsStatus.idle:
+            statusLine = 'Wear OS detected. Install the wrist companion on '
+                'your watch (toadHEALTH-wear.apk from the Releases page), '
+                'then flip the mirror on.';
+            break;
+          case WearOsStatus.wristReady:
+            statusLine = wearos.wristLinked
+                ? 'Toad riding your wrist - mirroring live.'
+                : 'Wear OS detected. Open the wrist app to hop aboard.';
+            break;
+        }
+        final lastCmd = wearos.lastCommandAt;
+        return SketchCard(
+          seed: 8.7,
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const SketchIcon(
+                    icon: ToadIcon.watch,
+                    size: 20,
+                    color: ToadColors.pondDeep,
+                    seed: 5,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Wear OS companion',
+                      style: ToadText.h2,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: wearos.wristLinked
+                          ? ToadColors.toad.withOpacity(0.16)
+                          : ToadColors.ink.withOpacity(0.06),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      wearos.wristLinked
+                          ? '${wearos.wrists} wrist${wearos.wrists == 1 ? '' : 's'}'
+                          : 'off wrist',
+                      style: ToadText.label,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(statusLine, style: ToadText.body),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  SketchButton(
+                    onTap: mirrorOn
+                        ? () {
+                            _tap();
+                            controller.setWearMirror(false);
+                          }
+                        : () {
+                            _tap();
+                            controller.setWearMirror(true);
+                          },
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    background: mirrorOn
+                        ? ToadColors.toad.withOpacity(0.16)
+                        : ToadColors.paper,
+                    borderColor:
+                        mirrorOn ? ToadColors.toadDeep : ToadColors.inkSoft,
+                    child: Text(
+                      mirrorOn ? 'Mirroring ON' : 'Mirror pond to wrist',
+                      style: TextStyle(
+                        fontFamily: 'PatrickHand',
+                        fontSize: 14,
+                        color: mirrorOn
+                            ? ToadColors.toadDeep
+                            : ToadColors.ink,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      mirrorOn
+                          ? (lastCmd != null
+                              ? 'last wrist action: ${wearos.lastCommand}'
+                              : 'the wrist sees your steps, water, sleep')
+                          : 'off - wrist cache cleared when reachable',
+                      style: ToadText.label,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

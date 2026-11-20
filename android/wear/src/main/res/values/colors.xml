@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The wrist palette mirrors lib/theme.dart but darkened for OLED:
+     the pond at night instead of cream paper. -->
+<resources>
+    <color name="wrist_bg">#1A2117</color>
+    <color name="wrist_bg_ambient">#000000</color>
+    <color name="wrist_ink">#F6F1E0</color>
+    <color name="wrist_ink_soft">#A8A48E</color>
+    <color name="wrist_toad">#5F9C3F</color>
+    <color name="wrist_toad_deep">#3B6B2B</color>
+    <color name="wrist_lilypad">#9CC46A</color>
+    <color name="wrist_coral">#E2694E</color>
+    <color name="wrist_pond">#6FB7C4</color>
+    <color name="wrist_sun">#EFB03F</color>
+    <color name="adaptive_bg">#31402B</color>
+    <!-- The adaptive-icon XMLs are copied from the phone app and point at
+         @color/ic_launcher_background; define it here too. -->
+    <color name="ic_launcher_background">#31402B</color>
+</resources>

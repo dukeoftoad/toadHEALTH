@@ -1,0 +1,61 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+      toadHEALTH wrist companion (feature/wear-os): mirrors the phone pond
+      onto the watch over the Wear Data Layer (device-to-device). Still NO
+      INTERNET permission - the wrist app cannot reach the network either.
+    -->
+    <uses-feature
+        android:name="android.hardware.type.watch"
+        android:required="true" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:label="toadHEALTH"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:allowBackup="false"
+        android:theme="@style/ToadWearTheme">
+
+        <activity
+            android:name=".WearActivity"
+            android:exported="true"
+            android:label="toadHEALTH">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          Receives /toad/state pushes while the wrist app is not open and
+          keeps the last snapshot in ToadStateStore, so a cold start shows
+          the pond instantly.
+        -->
+        <service
+            android:name=".ToadListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:scheme="wear"
+                    android:host="*"
+                    android:pathPrefix="/toad/state" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:scheme="wear"
+                    android:host="*"
+                    android:path="/toad/clear" />
+            </intent-filter>
+        </service>
+
+        <!-- Companion (non-standalone): the pond data comes from the phone. -->
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="false" />
+        <meta-data
+            android:name="com.google.android.wearable.capabilities"
+            android:resource="@array/wearable_capabilities" />
+    </application>
+</manifest>

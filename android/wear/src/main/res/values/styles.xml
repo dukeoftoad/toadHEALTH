@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Framework theme on purpose: the wrist app links zero AAR resources,
+         so aapt2 never needs a library's resource table. -->
+    <style name="ToadWearTheme" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">@color/wrist_bg</item>
+        <item name="android:statusBarColor">@color/wrist_bg</item>
+        <item name="android:navigationBarColor">@color/wrist_bg</item>
+    </style>
+</resources>

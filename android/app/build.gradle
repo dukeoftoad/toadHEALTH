@@ -1,6 +1,5 @@
 plugins {
     id "com.android.application"
-    id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -15,37 +14,71 @@ if (localPropertiesFile.exists()) {
 def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
 def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
 
+def releaseStoreFile = System.getenv("TOADHEALTH_RELEASE_STORE_FILE")
+def releaseStorePassword = System.getenv("TOADHEALTH_RELEASE_STORE_PASSWORD")
+def releaseKeyAlias = System.getenv("TOADHEALTH_RELEASE_KEY_ALIAS")
+def releaseKeyPassword = System.getenv("TOADHEALTH_RELEASE_KEY_PASSWORD")
+def releaseSigningConfigured = [
+    releaseStoreFile,
+    releaseStorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword
+].every { it != null && !it.trim().isEmpty() }
+
 android {
     namespace = "com.toadhealth.app"
-    compileSdk = 34
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
 
     defaultConfig {
         applicationId = "com.toadhealth.app"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 37
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }
 
+    if (releaseSigningConfigured) {
+        signingConfigs {
+            release {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // Release builds are signed with the debug key so the APK can be
-            // installed for testing without a signing certificate.
-            signingConfig = signingConfigs.debug
+            // Without the repository's persistent keystore this variant is
+            // unsigned; never ship a debug-key-signed release APK.
+            if (releaseSigningConfigured) {
+                signingConfig = signingConfigs.release
+            }
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Wear Data Layer transport for the opt-in wrist mirror. Google Play
+    // services uses encrypted Bluetooth when available and may relay
+    // end-to-end-encrypted payloads through Google Cloud when it is not.
+    implementation "com.google.android.gms:play-services-wearable:18.1.0"
 }

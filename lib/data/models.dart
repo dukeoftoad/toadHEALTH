@@ -8,12 +8,16 @@ class VaultSettings {
   bool firstRunDone;
   bool demoData;
 
+  /// Mirror the pond onto paired Wear OS wrists (feature/wear-os).
+  bool wearMirror;
+
   VaultSettings({
     this.stepsGoal = 8000,
     this.waterGoal = 8,
     this.sleepGoalMin = 480,
     this.firstRunDone = false,
     this.demoData = false,
+    this.wearMirror = false,
   });
 
   factory VaultSettings.fromMap(Map<String, dynamic> m) => VaultSettings(
@@ -22,6 +26,7 @@ class VaultSettings {
         sleepGoalMin: (m['sleepGoalMin'] as num?)?.toInt() ?? 480,
         firstRunDone: m['firstRunDone'] as bool? ?? false,
         demoData: m['demoData'] as bool? ?? false,
+        wearMirror: m['wearMirror'] as bool? ?? false,
       );
 
   Map<String, dynamic> toMap() => {
@@ -30,6 +35,7 @@ class VaultSettings {
         'sleepGoalMin': sleepGoalMin,
         'firstRunDone': firstRunDone,
         'demoData': demoData,
+        'wearMirror': wearMirror,
       };
 }
 

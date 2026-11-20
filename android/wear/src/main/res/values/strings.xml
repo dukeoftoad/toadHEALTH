@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">toadHEALTH</string>
+    <string name="steps_label">hops today</string>
+    <string name="water_label">glasses</string>
+    <string name="sleep_label">sleep</string>
+    <string name="hr_label">bpm</string>
+    <string name="log_water">+ 1 glass</string>
+    <string name="status_listening">pond listening</string>
+    <string name="status_asleep">phone pond asleep</string>
+    <string name="status_waiting">waiting for the pond…</string>
+    <string-array name="wearable_capabilities">
+        <item>toadhealth_wrist</item>
+    </string-array>
+</resources>

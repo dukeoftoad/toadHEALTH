@@ -21,8 +21,9 @@ import javax.crypto.spec.GCMParameterSpec
 /**
  * toadHEALTH native bridge.
  *
- * Three privacy-critical jobs, all implemented in-house with zero
- * third-party plugins and zero Google Play Services:
+ * The vault, step sensor and BLE heart-rate link are implemented in-house.
+ * The optional Wear OS companion uses Google's Wear Data Layer and Play
+ * services; its Bluetooth/cloud relay behavior is documented in PRIVACY.md.
  *
  *  1. "toadhealth/vault"  - hardware-backed AES-256-GCM key vault
  *     (Android Keystore generates and guards the key; the key material
@@ -37,11 +38,18 @@ import javax.crypto.spec.GCMParameterSpec
  *     over plain BLE GATT (standard Heart Rate Profile + Battery),
  *     implemented in WatchLink.kt. No Wear Data Layer, no Play Services,
  *     no network - the watch hops straight onto the pond.
+ *
+ *  4. "toadhealth/wear_os" + "toadhealth/wear_os_events" - the Wear OS
+ *     companion bridge (see WearOsBridge.kt): mirrors pond snapshots to the
+ *     android/wear wrist app over the Wear Data Layer and receives quick
+ *     logs back. When Play Services are missing (de-Googled ROMs) the
+ *     bridge quietly reports unsupported and everything else stands.
  */
 class MainActivity : FlutterActivity() {
 
     private var stepListener: SensorEventListener? = null
     private var watchLink: WatchLink? = null
+    private var wearOsBridge: WearOsBridge? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -137,6 +145,55 @@ class MainActivity : FlutterActivity() {
                 link.setSink(null)
             }
         })
+
+        // ---------- Wear OS companion (Data Layer - see WearOsBridge.kt) ----------
+
+        val wearOs = WearOsBridge(this)
+        wearOsBridge = wearOs
+
+        MethodChannel(messenger, "toadhealth/wear_os").setMethodCallHandler { call, result ->
+            try {
+                when (call.method) {
+                    "isSupported" -> result.success(wearOs.isSupported())
+                    "sendState" -> {
+                        val json = call.argument<String>("json")
+                        if (json == null) {
+                            result.error("BAD_ARGS", "missing 'json'", null)
+                        } else {
+                            result.success(wearOs.sendState(json))
+                        }
+                    }
+                    "clearState" -> {
+                        val clearedAt = call.argument<Number>("ts")?.toLong()
+                            ?: System.currentTimeMillis()
+                        result.success(wearOs.clearState(clearedAt))
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (e: Exception) {
+                result.error("WEAROS_ERROR", e.message, null)
+            }
+        }
+
+        EventChannel(messenger, "toadhealth/wear_os_events").setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(args: Any?, events: EventChannel.EventSink) {
+                wearOs.setSink(events)
+                wearOs.start()
+            }
+
+            override fun onCancel(args: Any?) {
+                wearOs.setSink(null)
+                wearOs.stop()
+            }
+        })
+    }
+
+    override fun onDestroy() {
+        stopStepCounter()
+        wearOsBridge?.setSink(null)
+        wearOsBridge?.stop()
+        wearOsBridge = null
+        super.onDestroy()
     }
 
     override fun onRequestPermissionsResult(

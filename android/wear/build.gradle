@@ -1,0 +1,92 @@
+plugins {
+    id "com.android.application"
+}
+
+// The Wear OS companion module: a tiny native Kotlin app that lives on the
+// wrist and mirrors the pond (steps / water / sleep / heart rate) while the
+// phone runs the Flutter app. Built separately with `:wear:assembleRelease`;
+// the Flutter toolchain never touches this module.
+//
+// External transport: play-services-wearable. The Data Layer uses
+// encrypted Bluetooth when available and can relay end-to-end-encrypted
+// payloads through Google Cloud when Bluetooth is unavailable. Every
+// resource the wrist app links is framework- or local-owned.
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader ->
+        localProperties.load(reader)
+    }
+}
+
+// Keep the phone and wrist artifact versions aligned with pubspec.yaml.
+// Flutter writes these values into local.properties before Android builds.
+def appVersionCode = localProperties.getProperty("flutter.versionCode") ?: "5"
+def appVersionName = localProperties.getProperty("flutter.versionName") ?: "1.3.0"
+
+def releaseStoreFile = System.getenv("TOADHEALTH_RELEASE_STORE_FILE")
+def releaseStorePassword = System.getenv("TOADHEALTH_RELEASE_STORE_PASSWORD")
+def releaseKeyAlias = System.getenv("TOADHEALTH_RELEASE_KEY_ALIAS")
+def releaseKeyPassword = System.getenv("TOADHEALTH_RELEASE_KEY_PASSWORD")
+def releaseSigningConfigured = [
+    releaseStoreFile,
+    releaseStorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword
+].every { it != null && !it.trim().isEmpty() }
+
+android {
+    namespace = "com.toadhealth.wear"
+    compileSdk = 37
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+
+    defaultConfig {
+        // Wear Data Layer requires the same application ID and signing
+        // certificate as the phone app; the devices are separate installs.
+        applicationId = "com.toadhealth.app"
+        minSdk = 26
+        targetSdk = 37
+        versionCode = appVersionCode.toInteger()
+        versionName = appVersionName
+    }
+
+    if (releaseSigningConfigured) {
+        signingConfigs {
+            release {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            // Use the same persistent keystore as the phone app so the
+            // Data Layer identity/signature checks match across devices.
+            if (releaseSigningConfigured) {
+                signingConfig = signingConfigs.release
+            }
+            minifyEnabled = false
+        }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+}
+
+dependencies {
+    // The Wear Data Layer uses encrypted Bluetooth when available. If
+    // Bluetooth is unavailable, Google Play services can relay the
+    // end-to-end-encrypted payload through Google-owned cloud servers.
+    implementation "com.google.android.gms:play-services-wearable:18.1.0"
+}
