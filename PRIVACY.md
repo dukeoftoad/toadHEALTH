@@ -25,12 +25,15 @@ but verifiable properties of the code in this repository.
 - Lets you erase everything and re-key the vault in one tap.
 - Optionally (off by default, one toggle) mirrors steps / water / sleep /
   heart-rate snapshots to a paired Wear OS watch running the companion APK,
-  and accepts quick logs back from the wrist. The Wear Data Layer uses an
-  encrypted Bluetooth connection when available. If Bluetooth is unavailable,
-  Google Play services automatically routes the payload through a
-  Google-owned cloud node; Google documents that cloud path as end-to-end
-  encrypted. The payload can therefore transit Google infrastructure even
-  though toadHEALTH operates no backend server.
+  and accepts explicit quick-log/ping commands back from the wrist. Watch
+  snapshots are encrypted at rest with a watch-local Android Keystore AES-GCM
+  key. Turning mirroring off sends a cache-clear command; an offline watch
+  can only erase its local cache after it reconnects. The Wear Data Layer uses
+  encrypted Bluetooth when available. If Bluetooth is unavailable, Google
+  Play services can relay the payload through a Google-owned cloud node;
+  Google documents that cloud path as end-to-end encrypted. The payload can
+  therefore transit Google infrastructure even though toadHEALTH operates
+  no backend server.
 
 ## The Wear OS companion (opt-in)
 
@@ -45,6 +48,10 @@ but verifiable properties of the code in this repository.
 - No-Googled-ROMs stay first-class: without Play Services the bridge reports
   "unsupported", the toggle is inert, and every other feature is untouched.
 - The wear APK declares no `INTERNET` permission either.
+- The last watch snapshot is stored as AES-GCM ciphertext using a watch-local
+  Android Keystore key, not as plaintext preferences. Turning mirroring off
+  sends a clear command to reachable companion nodes; an offline watch cannot
+  receive that command until it reconnects.
 
 ## Permissions (Android)
 
