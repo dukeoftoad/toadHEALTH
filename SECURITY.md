@@ -9,13 +9,17 @@
 | App password | PBKDF2-HMAC-SHA256, 250,000 iterations, random 16-byte salt; only the wrapped DEK is stored |
 | Recovery code | 120-bit base32 code; wraps the same DEK under its own PBKDF2 credential |
 | Backups | `TOAD1:` payload = PBKDF2(passphrase) -> AES-256-GCM; passphrase never touches disk |
+| Wear OS cache | Mirrored snapshot is AES-256-GCM encrypted in app-private preferences with a watch-local Android Keystore key; mirror-off sends a remote clear command |
 | Network egress | The phone and watch source manifests do not request **INTERNET permission**. However, the opt-in Wear Data Layer is provided by Google Play services and can relay messages through Google-owned servers when Bluetooth is unavailable; Google documents the cloud payload as end-to-end encrypted. |
 
 ## Threat model (honest scope)
 
 **Protected against:** casual device access, backup extraction (Android cloud
 backup is disabled via `allowBackup="false"`), and file-level exfiltration of
-the phone vault without the device key. The Wear Data Layer's cloud fallback
+the phone vault without the device key. The Wear snapshot preferences are
+ciphertext without the watch's Keystore key. A mirror-off clear reaches
+reachable watches; an offline watch may retain encrypted cache data until it
+reconnects and receives that command. The Wear Data Layer's cloud fallback
 is documented by Google as end-to-end encrypted, but the transport can still
 use Google-owned infrastructure when Bluetooth is unavailable; this app
 therefore does not claim that all traffic is network-free.
