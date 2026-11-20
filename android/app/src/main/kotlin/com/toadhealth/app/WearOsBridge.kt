@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.wearable.CapabilityClient
+import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
@@ -127,9 +128,27 @@ class WearOsBridge(private val activity: Activity) :
     fun sendState(json: String): Boolean =
         sendToWrist(PATH_STATE, json.toByteArray(Charsets.UTF_8))
 
-    /** Removes the cached health snapshot from every reachable wrist companion. */
-    fun clearState(clearedAt: Long): Boolean =
-        sendToWrist(PATH_CLEAR, clearedAt.toString().toByteArray(Charsets.UTF_8))
+    /**
+     * Persist a clear watermark in the Wear Data Layer. Unlike a MessageClient
+     * message, this DataItem is buffered and syncs to a watch when it reconnects.
+     * It contains only a timestamp, never the health snapshot.
+     */
+    fun clearState(clearedAt: Long): Boolean {
+        if (!isSupported()) return false
+        return try {
+            val request = PutDataMapRequest.create(PATH_CLEAR).apply {
+                dataMap.putLong("clearedAt", clearedAt)
+            }.asPutDataRequest().setUrgent()
+            Wearable.getDataClient(activity).putDataItem(request)
+                .addOnFailureListener { error ->
+                    Log.w(TAG, "Could not sync mirror-clear watermark", error)
+                }
+            true
+        } catch (e: Throwable) {
+            Log.w(TAG, "Could not create mirror-clear watermark", e)
+            false
+        }
+    }
 
     private fun sendToWrist(path: String, bytes: ByteArray): Boolean {
         if (!isSupported()) return false
