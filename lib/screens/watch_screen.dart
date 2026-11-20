@@ -597,9 +597,9 @@ class _WatchScreenState extends State<WatchScreen>
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Heartbeats and hops stay inside the vault, sealed with '
-                    'AES-256. The buddy link is Bluetooth-only - no cloud, '
-                    'no Google, no wires.',
+                    'Heart-rate samples from this BLE buddy are session-only. '
+                    'The separate opt-in Wear OS mirror uses Google’s Data Layer; '
+                    'its encrypted payloads may be relayed through Google Cloud.',
                     style: ToadText.body,
                   ),
                 ),
@@ -623,9 +623,9 @@ class _WatchScreenState extends State<WatchScreen>
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 4),
       child: Text(
-        'The watch link speaks the standard Bluetooth heart-rate profile '
-        '(no Google Wear layer, no Play Services, no network). '
-        'Readings never leave this device.',
+        'The BLE heart-rate link is direct Bluetooth. The optional Wear OS '
+        'mirror uses Google Play services: encrypted Bluetooth when available, '
+        'or an end-to-end-encrypted Google Cloud relay when it is not.',
         style: ToadText.label,
       ),
     );
