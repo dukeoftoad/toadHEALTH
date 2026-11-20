@@ -13,7 +13,6 @@ import 'screens/log_sheets.dart';
 import 'screens/watch_screen.dart';
 import 'sleep_screen.dart';
 import 'state/app_services.dart';
-import 'state/watch_controller.dart';
 import 'theme.dart';
 import 'toad_painter.dart';
 import 'water_screen.dart';
