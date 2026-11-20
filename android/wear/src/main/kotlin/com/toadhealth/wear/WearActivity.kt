@@ -51,6 +51,7 @@ class WearActivity : Activity() {
             sleepValue.text = "—"
             hrValue.text = "—"
             statusLine.setText(R.string.status_asleep)
+            waterButton.isEnabled = false
         }
     }
 
@@ -67,6 +68,9 @@ class WearActivity : Activity() {
         hrValue = findViewById(R.id.hr_value)
         statusLine = findViewById(R.id.status_line)
         waterButton = findViewById(R.id.water_button)
+        // Until a fresh mirror snapshot confirms that mirroring is enabled,
+        // don't let the wrist optimistically display a local health change.
+        waterButton.isEnabled = false
 
         waterButton.setOnClickListener {
             sendCommand(JSONObject().put("action", "log_water").put("glasses", 1))
@@ -149,6 +153,7 @@ class WearActivity : Activity() {
         statusLine.setText(
             if (fresh) R.string.status_listening else R.string.status_asleep,
         )
+        waterButton.isEnabled = fresh
     }
 
     private fun compact(value: Int): String {
