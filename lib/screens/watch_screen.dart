@@ -15,9 +15,6 @@ import '../widgets.dart';
 /// Pond Watch: wire a smart watch to the pond.
 ///
 /// The link is honest and de-Googled by design: plain BLE GATT to the
-/// standard Heart Rate Profile (no Play Services, no network). The toad
-/// reads your heartbeat and paces its run to it - the toad is the body
-/// of the app, on your wrist too.
 class WatchScreen extends StatefulWidget {
   const WatchScreen({super.key});
 
@@ -192,8 +189,6 @@ class _WatchScreenState extends State<WatchScreen>
     );
   }
 
-  // ---------------- off / intro ----------------
-
   Widget _buildIntro(WatchController watch) {
     return Column(
       children: [
@@ -274,8 +269,6 @@ class _WatchScreenState extends State<WatchScreen>
       ],
     );
   }
-
-  // ---------------- scanning ----------------
 
   Widget _buildScanning(WatchController watch) {
     return Column(
@@ -365,8 +358,6 @@ class _WatchScreenState extends State<WatchScreen>
     );
   }
 
-  // ---------------- connecting ----------------
-
   Widget _buildConnecting(String name) {
     return SketchCard(
       seed: 3.7,
@@ -419,8 +410,6 @@ class _WatchScreenState extends State<WatchScreen>
       ),
     );
   }
-
-  // ---------------- connected ----------------
 
   Widget _buildConnected(WatchController watch) {
     final demo = watch.demoMode;
@@ -640,9 +629,7 @@ class _WatchScreenState extends State<WatchScreen>
   }
 }
 
-// ---------------------------------------------------------------------------
 // Private painters
-// ---------------------------------------------------------------------------
 
 /// Hand-drawn watch: strap, case, ticks - and the toad living on the dial.
 class _WatchPainter extends CustomPainter {

@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 /// Bridge to the native hardware key vault (Android Keystore) and the app's
 /// private storage directory.
 ///
-/// These are toadHEALTH's OWN channels, implemented in MainActivity.kt.
-/// No third-party plugins, no Google Play Services, no network.
 class VaultChannel {
   static const MethodChannel _channel = MethodChannel('toadhealth/vault');
 

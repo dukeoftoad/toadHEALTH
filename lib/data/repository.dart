@@ -6,7 +6,6 @@ import 'vault_service.dart';
 /// The on-device health database, persisted as an AES-256-GCM sealed JSON
 /// document through [VaultService]. All numbers here are REAL user data -
 /// nothing is simulated at runtime (the optional demo pond is a clearly
-/// labelled, erasable user action).
 class HealthRepository {
   HealthRepository(this._vault);
 

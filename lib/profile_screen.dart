@@ -239,8 +239,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // ---------- backup flows ----------
-
   Future<void> _exportFlow() async {
     final r = await _twoFieldDialog(
       title: 'Encrypted backup',
@@ -289,8 +287,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _toast('Backup restored into the vault.');
   }
 
-  // ---------- data flows ----------
-
   Future<void> _seedDemoFlow() async {
     await AppServices.controller.seedDemo();
     setState(() {});
@@ -323,8 +319,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
     setState(() => _goalsSaved = true);
   }
-
-  // ---------- build ----------
 
   @override
   Widget build(BuildContext context) {

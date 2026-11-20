@@ -6,9 +6,6 @@ import 'vault_store.dart';
 /// File-backed store for native platforms. Uses the app-private directory
 /// provided by our own channel (Android filesDir, excluded from cloud
 /// backups via android:allowBackup="false"), falling back to a fixed
-/// temp location on desktop debug builds.
-/// Resolves the default native store: app-private dir via our own channel,
-/// falling back to a fixed temp directory on desktop debug builds.
 Future<VaultStore> createDefaultStore() async {
   Directory dir;
   final path = await VaultChannel.storageDir();

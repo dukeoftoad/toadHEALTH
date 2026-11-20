@@ -6,9 +6,6 @@ import 'state/app_controller.dart';
 /// Compatibility facade over the live [AppController].
 ///
 /// Before v1.1 this file held simulated data; now every value is REAL,
-/// persisted in the AES-256-GCM encrypted on-device vault and fed by the
-/// hardware step sensor where available. Screens keep their existing
-/// `HealthData.x` call sites; the plumbing below simply delegates.
 
 String fmtNumber(int n) {
   final s = n.toString();

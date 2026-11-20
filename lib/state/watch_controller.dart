@@ -26,8 +26,6 @@ class WatchDevice {
 /// Owns the smart-watch connection state machine and the live readings the
 /// UI draws. All real data arrives over [WatchLink]; a clearly-labelled
 /// demo buddy ("Pond Buddy (demo)") keeps the pond lively on emulators,
-/// web and desktop where BLE does not exist - same honest-demo approach as
-/// the demo pond data.
 class WatchController extends ChangeNotifier {
   WatchLinkState state = WatchLinkState.off;
   List<WatchDevice> devices = <WatchDevice>[];
@@ -115,8 +113,6 @@ class WatchController extends ChangeNotifier {
     }
     notifyListeners();
   }
-
-  // ---------- user actions ----------
 
   Future<void> startScan() async {
     error = null;

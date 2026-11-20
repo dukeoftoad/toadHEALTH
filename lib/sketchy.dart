@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 /// The hand-drawn ink engine.
 ///
 /// Every line, circle and blob in toadHEALTH goes through these helpers so
-/// the whole app looks like it was sketched with a wobbly pen. The wobble is
-/// deterministic (seeded value noise), so frames stay stable while animating.
 
 /// Deterministic hash noise in [0, 1).
 double hash01(double x) {

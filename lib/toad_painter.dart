@@ -33,7 +33,6 @@ class ToadPalette {
 /// The hand-drawn toad mascot, painted entirely with wobbly ink strokes.
 ///
 /// The design space is a 100x100 box; [phase] (0..1, may exceed 1) drives the
-/// walk cycle and body bob so the toad can be animated with any controller.
 class ToadPainter extends CustomPainter {
   final ToadPose pose;
   final double phase;

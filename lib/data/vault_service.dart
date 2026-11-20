@@ -8,15 +8,6 @@ import '../core/vault_store.dart';
 /// Key lifecycle for the toadHEALTH vault.
 ///
 /// Architecture (envelope encryption):
-///
-///   DEK  - 32 random bytes, encrypts the health database (AES-256-GCM)
-///   device credential    - DEK wrapped by the Android Keystore hardware key
-///   password credential  - DEK wrapped by PBKDF2-HMAC-SHA256(app password)
-///   recovery credential  - DEK wrapped by PBKDF2-HMAC-SHA256(recovery code)
-///
-/// Losing your password? The recovery code unwraps the same DEK and lets
-/// you set a new password - that is password restore, without any server,
-/// without any account, without anything leaving the device.
 class VaultService {
   VaultStore? _store;
   Map<String, dynamic> _meta = {};
@@ -122,8 +113,6 @@ class VaultService {
   Future<void> _saveMeta() async {
     await _store?.writeText('vault_meta.json', jsonEncode(_meta));
   }
-
-  // ---------- unlock paths ----------
 
   Future<bool> unlockWithDevice() async {
     try {

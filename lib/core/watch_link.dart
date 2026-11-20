@@ -4,17 +4,6 @@ import 'package:flutter/services.dart';
 /// Bridge to a smart watch over plain Android BLE (GATT).
 ///
 /// Like [VaultChannel] and [StepSensor], this is toadHEALTH's OWN channel,
-/// implemented in WatchLink.kt / MainActivity.kt: no third-party plugins,
-/// no Google Play Services, no Wear Data Layer, no network. The watch only
-/// has to speak the standard Bluetooth Heart Rate Profile:
-///
-///   Heart Rate Service     0x180D   (notify -> 0x2A37, BPM)
-///   Battery Service        0x180F   (read   -> 0x2A19, percent)
-///
-/// Works with Wear OS watches while they expose the heart-rate service and
-/// with ordinary BLE heart-rate straps. Returns null / false on platforms
-/// without the channel (web demo, desktop) - the UI then offers the
-/// clearly-labelled demo buddy instead of pretending.
 class WatchLink {
   static const MethodChannel _channel = MethodChannel('toadhealth/watch');
   static const EventChannel _events = EventChannel('toadhealth/watch_events');
@@ -81,9 +70,6 @@ class WatchLink {
   /// Watch events as maps:
   ///   {ev: state,    value: scanning|connecting|connected|off}
   ///   {ev: device,   name, address, rssi}
-  ///   {ev: hr,       bpm}
-  ///   {ev: battery,  level}
-  ///   {ev: error,    code: perm|bt_off|scan|connect|no_hr}
   static Stream<Map<Object?, Object?>>? listen() {
     if (!isSupported) return null;
     try {

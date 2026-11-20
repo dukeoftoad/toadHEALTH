@@ -7,11 +7,6 @@ import 'package:cryptography/cryptography.dart';
 /// The toadHEALTH ink-and-iron crypto core.
 ///
 /// - Data at rest: AES-256-GCM (authenticated encryption) envelopes.
-/// - Password / recovery key derivation: PBKDF2-HMAC-SHA256 with a per
-///   credential random 16-byte salt. Iteration count is stored with each
-///   credential so it can be raised without breaking old vaults.
-/// - Envelope format:
-///     [ 'T','A','E','G' ][ version:1 ][ nonce:12 ][ ciphertext ][ tag:16 ]
 
 const List<int> _magic = [0x54, 0x41, 0x45, 0x47]; // "TAEG"
 const int _version = 1;
