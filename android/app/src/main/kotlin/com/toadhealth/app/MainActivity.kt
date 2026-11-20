@@ -163,7 +163,11 @@ class MainActivity : FlutterActivity() {
                             result.success(wearOs.sendState(json))
                         }
                     }
-                    "clearState" -> result.success(wearOs.clearState())
+                    "clearState" -> {
+                        val clearedAt = call.argument<Number>("ts")?.toLong()
+                            ?: System.currentTimeMillis()
+                        result.success(wearOs.clearState(clearedAt))
+                    }
                     else -> result.notImplemented()
                 }
             } catch (e: Exception) {
