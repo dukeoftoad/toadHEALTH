@@ -13,6 +13,7 @@ enum ToadIcon {
   walk,
   drop,
   heart,
+  watch,
   moon,
   flame,
   paws,
@@ -65,6 +66,9 @@ class SketchIconPainter extends CustomPainter {
         break;
       case ToadIcon.heart:
         _heart(canvas);
+        break;
+      case ToadIcon.watch:
+        _watch(canvas);
         break;
       case ToadIcon.moon:
         _moon(canvas);
@@ -246,6 +250,68 @@ class SketchIconPainter extends CustomPainter {
     );
     _fillIf(canvas, h, opacity: 0.25);
     _stroke(canvas, h);
+  }
+
+  void _watch(Canvas canvas) {
+    // Straps above and below the case.
+    final top = sketchRoundRect(
+      const Rect.fromLTWH(8.4, 1.4, 7.2, 4.4),
+      radius: 1.8,
+      seed: seed,
+      amp: 0.3,
+    );
+    _fillIf(canvas, top, opacity: 0.18);
+    _stroke(canvas, top, width: 0.95);
+    final bottom = sketchRoundRect(
+      const Rect.fromLTWH(8.4, 18.2, 7.2, 4.4),
+      radius: 1.8,
+      seed: seed + 1.2,
+      amp: 0.3,
+    );
+    _fillIf(canvas, bottom, opacity: 0.18);
+    _stroke(canvas, bottom, width: 0.95);
+
+    // Case: a wobbly pen-drawn circle.
+    final casePath = sketchEllipse(
+      const Offset(12, 12),
+      6.8,
+      6.8,
+      seed: seed + 2.4,
+      amp: 0.45,
+    );
+    _fillIf(canvas, casePath, opacity: 0.12);
+    _stroke(canvas, casePath);
+
+    // Dial ticks at the four cardinal points.
+    for (var i = 0; i < 4; i++) {
+      final a = i * math.pi / 2;
+      final o1 = Offset(12 + math.cos(a) * 5.5, 12 + math.sin(a) * 5.5);
+      final o2 = Offset(12 + math.cos(a) * 4.5, 12 + math.sin(a) * 4.5);
+      _stroke(
+        canvas,
+        sketchLine(o1, o2, seed: seed + 10.0 + i, amp: 0.15),
+        width: 0.85,
+      );
+    }
+
+    // A little heart on the dial: it is a health watch, after all.
+    final heart = sketchThrough(
+      const [
+        Offset(12, 15.1),
+        Offset(10.1, 13.3),
+        Offset(9.7, 11.7),
+        Offset(10.5, 10.6),
+        Offset(12, 11.4),
+        Offset(13.5, 10.6),
+        Offset(14.3, 11.7),
+        Offset(13.9, 13.3),
+      ],
+      closed: true,
+      seed: seed + 4.1,
+      amp: 0.2,
+    );
+    _fillIf(canvas, heart, opacity: 0.30);
+    _stroke(canvas, heart, width: 0.9);
   }
 
   void _moon(Canvas canvas) {

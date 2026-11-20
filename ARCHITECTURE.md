@@ -26,6 +26,9 @@ lib/
                              (seal / unseal / storageDir) - no plugins
     step_sensor.dart         our own EventChannel to Sensor.TYPE_STEP_COUNTER
                              (raw AOSP sensor - not Google Fit / Health Connect)
+    watch_link.dart          our own channel to plain BLE GATT - the smart-watch
+                             link (standard Heart Rate Profile 0x180D/0x2A37 +
+                             Battery 0x180F/0x2A19; native side in WatchLink.kt)
     vault_crypto.dart        AES-256-GCM envelopes ("TAEG" framing),
                              PBKDF2-HMAC-SHA256 derivation, recovery codes
     vault_store.dart         storage abstraction + conditional export
@@ -41,7 +44,11 @@ lib/
 
   state/
     app_controller.dart      AppController (ChangeNotifier): aggregates,
-                             streaks, hourly buckets, debounced persistence
+                             streaks, hourly buckets, debounced persistence,
+                             plus the WatchController (watch link state machine)
+    watch_controller.dart    watch connection states (off / scanning /
+                             connecting / connected), BPM + battery buffers,
+                             and the clearly-labelled demo buddy
     app_services.dart        boot orchestration + tiny service locator
 
   ui (lib root)              sketchy.dart, toad_painter.dart, icon_painter.dart,
@@ -118,6 +125,15 @@ blobs).
 - **ADR-8: honest degradation.** No sensor -> manual logging with an empty
   state that says so. No web hardware vault -> demo banner says what is
   weaker. The app never fakes data to look alive.
+- **ADR-9: watch link over plain BLE GATT, not Google's Wear Data Layer.**
+  Wiring an Android smart watch without surrendering the zero-Play-Services
+  promise means speaking the standard Bluetooth Heart Rate Profile
+  (service 0x180D / measurement 0x2A37, battery 0x180F/0x2A19) from our own
+  Kotlin GATT client (WatchLink.kt, ~300 lines). Wear OS watches and ordinary
+  BLE heart-rate straps both expose these characteristics. Readings flow as
+  EventChannel events into the WatchController state machine; a one-tap,
+  clearly-labelled demo buddy covers emulators and the web build. Heartbeat
+  samples are session-only and are never persisted into the vault.
 
 ## Extending
 

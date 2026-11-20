@@ -1,6 +1,7 @@
 import '../data.dart';
 import '../data/vault_service.dart';
 import 'app_controller.dart';
+import 'watch_controller.dart';
 
 /// Tiny service locator. Boot starts in main() (parallel with the splash
 /// animation) and runs exactly once; screens are only ever built after it.
@@ -17,6 +18,9 @@ class AppServices {
   }
 
   static bool get booted => _controller != null;
+
+  /// The app's smart-watch link (lives on the controller; one owner).
+  static WatchController get watch => controller.watch;
 
   /// True while the vault exists but no credential has opened it yet
   /// (password set, device unlock unavailable). The splash routes to the
@@ -35,6 +39,7 @@ class AppServices {
       await controller.load();
       await controller.startSensor();
     }
+    watch.ensureListener();
     HealthData.attach(controller);
   }
 
@@ -43,6 +48,7 @@ class AppServices {
     final controller = controllerOf();
     await controller.load();
     await controller.startSensor();
+    watch.ensureListener();
   }
 
   static AppController controllerOf() {

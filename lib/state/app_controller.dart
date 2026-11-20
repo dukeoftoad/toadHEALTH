@@ -7,6 +7,7 @@ import '../core/step_sensor.dart';
 import '../data/models.dart';
 import '../data/repository.dart';
 import '../data/vault_service.dart';
+import 'watch_controller.dart';
 
 /// Single source of truth for the UI. Reads and writes REAL records through
 /// [HealthRepository]; every change is persisted (debounced) into the
@@ -16,6 +17,9 @@ class AppController extends ChangeNotifier {
 
   final VaultService _vault;
   final HealthRepository repo;
+
+  /// Smart-watch link state (BLE GATT heart-rate buddy).
+  final WatchController watch = WatchController();
 
   final ValueNotifier<int> stepsN = ValueNotifier<int>(0);
   final ValueNotifier<int> waterN = ValueNotifier<int>(0);
@@ -246,10 +250,18 @@ class AppController extends ChangeNotifier {
     }, onError: (_) {});
   }
 
+  /// Keep the watch event pipe warm so a previously linked buddy's events
+  /// (battery, disconnects) are seen even before the Pond Watch screen is
+  /// opened. Harmless on platforms without the channel.
+  void startWatchListener() {
+    watch.ensureListener();
+  }
+
   @override
   void dispose() {
     _saveTimer?.cancel();
     _sensorSub?.cancel();
+    watch.dispose();
     stepsN.dispose();
     waterN.dispose();
     super.dispose();

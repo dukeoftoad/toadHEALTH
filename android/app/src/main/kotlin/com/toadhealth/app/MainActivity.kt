@@ -1,6 +1,7 @@
 package com.toadhealth.app
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -20,8 +21,8 @@ import javax.crypto.spec.GCMParameterSpec
 /**
  * toadHEALTH native bridge.
  *
- * Two privacy-critical jobs, both implemented in-house with zero third-party
- * plugins and zero Google Play Services:
+ * Three privacy-critical jobs, all implemented in-house with zero
+ * third-party plugins and zero Google Play Services:
  *
  *  1. "toadhealth/vault"  - hardware-backed AES-256-GCM key vault
  *     (Android Keystore generates and guards the key; the key material
@@ -31,10 +32,16 @@ import javax.crypto.spec.GCMParameterSpec
  *  2. "toadhealth/steps"  - raw hardware step counter sensor
  *     (Sensor.TYPE_STEP_COUNTER from the AOSP sensor stack - not
  *     Google Fit, not Health Connect, no network involved).
+ *
+ *  3. "toadhealth/watch" + "toadhealth/watch_events" - smart-watch link
+ *     over plain BLE GATT (standard Heart Rate Profile + Battery),
+ *     implemented in WatchLink.kt. No Wear Data Layer, no Play Services,
+ *     no network - the watch hops straight onto the pond.
  */
 class MainActivity : FlutterActivity() {
 
     private var stepListener: SensorEventListener? = null
+    private var watchLink: WatchLink? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -76,6 +83,73 @@ class MainActivity : FlutterActivity() {
                 stopStepCounter()
             }
         })
+
+        // ---------- Smart-watch link (plain BLE GATT - see WatchLink.kt) ----------
+
+        val link = WatchLink(this)
+        watchLink = link
+
+        MethodChannel(messenger, "toadhealth/watch").setMethodCallHandler { call, result ->
+            try {
+                when (call.method) {
+                    "isAvailable" -> result.success(link.isAvailable())
+                    "requestPermissions" -> {
+                        if (link.hasPermissions()) {
+                            result.success(true)
+                        } else {
+                            // Dialog shown: the answer completes the result
+                            // later from onRequestPermissionsResult.
+                            val asked = link.requestPermissions { ok -> result.success(ok) }
+                            if (!asked) result.success(false)
+                        }
+                    }
+                    "startScan" -> result.success(link.startScan())
+                    "stopScan" -> {
+                        link.stopScan()
+                        result.success(null)
+                    }
+                    "connect" -> {
+                        val address = call.argument<String>("address")
+                        if (address == null) {
+                            result.error("BAD_ARGS", "missing 'address'", null)
+                        } else {
+                            result.success(link.connect(address))
+                        }
+                    }
+                    "disconnect" -> {
+                        link.disconnect()
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (e: Exception) {
+                result.error("WATCH_ERROR", e.message, null)
+            }
+        }
+
+        EventChannel(messenger, "toadhealth/watch_events").setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(args: Any?, events: EventChannel.EventSink) {
+                link.setSink(events)
+            }
+
+            override fun onCancel(args: Any?) {
+                link.stopScan()
+                link.setSink(null)
+            }
+        })
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == WatchLink.PERMISSION_REQUEST) {
+            watchLink?.onPermissionResult(
+                grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            )
+        }
     }
 
     // ---------- Hardware-backed key vault (Android Keystore, AES-256-GCM) ----------
