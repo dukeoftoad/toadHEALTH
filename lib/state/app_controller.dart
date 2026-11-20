@@ -270,6 +270,11 @@ class AppController extends ChangeNotifier {
     } on FormatException {
       return false;
     }
+    // A restored vault must not silently re-enable the optional Wear Data
+    // Layer from an older backup; the user can opt in again explicitly.
+    final restoredSettings = settings..wearMirror = false;
+    repo.settings = restoredSettings;
+    wearos.clearMirror();
     await repo.save();
     refresh();
     return true;
@@ -281,6 +286,8 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> wipeData() async {
+    // Erase the remote wrist snapshot along with the phone vault.
+    wearos.clearMirror();
     repo.reset();
     await _vault.wipeEverything();
     await repo.save();
