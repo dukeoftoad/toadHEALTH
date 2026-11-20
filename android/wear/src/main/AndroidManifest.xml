@@ -39,7 +39,7 @@
                 <data
                     android:scheme="wear"
                     android:host="*"
-                    android:pathPrefix="/toad/state" />
+                    android:pathPrefix="/toad/" />
             </intent-filter>
         </service>
 
