@@ -73,8 +73,35 @@ object ToadStateStore {
         return generator.generateKey()
     }
 
+    private const val KEY_CLEAR_BEFORE = "clear_before_ts"
+
+    private fun decryptStored(context: Context): String? {
+        val encoded = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getString(KEY_STATE, null) ?: return null
+        val record = Base64.decode(encoded, Base64.NO_WRAP)
+        require(record.size > 1 + IV_LENGTH && record[0] == FORMAT_VERSION) {
+            "Unsupported or truncated watch snapshot"
+        }
+        val iv = record.copyOfRange(1, 1 + IV_LENGTH)
+        val ciphertext = record.copyOfRange(1 + IV_LENGTH, record.size)
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(
+            Cipher.DECRYPT_MODE,
+            secretKey(),
+            GCMParameterSpec(128, iv),
+        )
+        return String(cipher.doFinal(ciphertext), Charsets.UTF_8)
+    }
+
     fun save(context: Context, json: String) {
-        lastJson = json
+        val incoming = parseState(json)
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val clearBefore = prefs.getLong(KEY_CLEAR_BEFORE, 0L)
+        if (incoming.isEmpty || incoming.ts <= clearBefore) return
+
+        val current = lastJson?.let { parseState(it) }
+        if (current != null && current.ts > incoming.ts) return
+
         try {
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
             cipher.init(Cipher.ENCRYPT_MODE, secretKey())
@@ -84,52 +111,68 @@ object ToadStateStore {
             record[0] = FORMAT_VERSION
             iv.copyInto(record, 1)
             ciphertext.copyInto(record, 1 + iv.size)
-            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-                .edit()
+            prefs.edit()
                 .putString(KEY_STATE, Base64.encodeToString(record, Base64.NO_WRAP))
                 .apply()
+            lastJson = json
+            if (activityListening) onFreshState?.invoke(json)
         } catch (_: Exception) {
             // Never leave an older snapshot on disk if encryption/persistence fails.
-            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-                .edit().remove(KEY_STATE).apply()
+            prefs.edit().remove(KEY_STATE).apply()
+            lastJson = null
         }
-        if (activityListening) onFreshState?.invoke(json)
     }
 
     fun load(context: Context) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val encoded = prefs.getString(KEY_STATE, null)
-        if (encoded.isNullOrBlank()) {
+        val json = try {
+            decryptStored(context)
+        } catch (_: Exception) {
+            null
+        }
+        if (json == null) {
+            lastJson = null
+            if (prefs.contains(KEY_STATE)) {
+                prefs.edit().remove(KEY_STATE).commit()
+            }
+            return
+        }
+
+        val state = parseState(json)
+        val clearBefore = prefs.getLong(KEY_CLEAR_BEFORE, 0L)
+        if (state.isEmpty || state.ts <= clearBefore) {
+            prefs.edit().remove(KEY_STATE).commit()
             lastJson = null
             return
         }
-        try {
-            val record = Base64.decode(encoded, Base64.NO_WRAP)
-            require(record.size > 1 + IV_LENGTH && record[0] == FORMAT_VERSION) {
-                "Unsupported or truncated watch snapshot"
-            }
-            val iv = record.copyOfRange(1, 1 + IV_LENGTH)
-            val ciphertext = record.copyOfRange(1 + IV_LENGTH, record.size)
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(
-                Cipher.DECRYPT_MODE,
-                secretKey(),
-                GCMParameterSpec(128, iv),
-            )
-            lastJson = String(cipher.doFinal(ciphertext), Charsets.UTF_8)
-        } catch (_: Exception) {
-            // A lost/invalidated Keystore key or corrupt record must not
-            // resurrect stale health information.
-            clear(context)
-        }
+        lastJson = json
     }
 
-    /** Erases both the in-memory snapshot and the encrypted disk record. */
-    fun clear(context: Context) {
-        lastJson = null
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().remove(KEY_STATE).commit()
-        if (activityListening) onCleared?.invoke()
+    /**
+     * Stores a timestamp watermark as well as clearing the current snapshot.
+     * Any delayed pre-clear message arriving later is ignored, preventing an
+     * in-flight queued state message from repopulating the cache after opt-out.
+     * A newer snapshot is retained if Data Layer delivery reordered messages.
+     */
+    fun clear(context: Context, clearedAt: Long = System.currentTimeMillis()) {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val currentJson = lastJson ?: try {
+            decryptStored(context)
+        } catch (_: Exception) {
+            null
+        }
+        val currentTs = currentJson?.let { parseState(it).ts } ?: 0L
+        val watermark = maxOf(prefs.getLong(KEY_CLEAR_BEFORE, 0L), clearedAt)
+        val editor = prefs.edit().putLong(KEY_CLEAR_BEFORE, watermark)
+        val didClear = currentTs <= watermark
+        if (didClear) {
+            editor.remove(KEY_STATE)
+            lastJson = null
+        } else {
+            lastJson = currentJson
+        }
+        editor.commit()
+        if (didClear && activityListening) onCleared?.invoke()
     }
 
     /** Parses the stored snapshot; defaults cover a blank first boot. */
