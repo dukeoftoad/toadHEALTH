@@ -1,10 +1,6 @@
 # toadHEALTH
 
 <p align="center">
-  <img src="assets/images/banner.png" alt="toadHEALTH banner" width="820" />
-</p>
-
-<p align="center">
   <a href="https://github.com/dukeoftoad/toadHEALTH/actions/workflows/flutter-ci.yml"><img src="https://github.com/dukeoftoad/toadHEALTH/actions/workflows/flutter-ci.yml/badge.svg" alt="Flutter CI" /></a>
   <a href="https://github.com/dukeoftoad/toadHEALTH/actions/workflows/release-apk.yml"><img src="https://github.com/dukeoftoad/toadHEALTH/actions/workflows/release-apk.yml/badge.svg" alt="Release APK" /></a>
   <a href="https://github.com/dukeoftoad/toadHEALTH/actions/workflows/gh-pages.yml"><img src="https://github.com/dukeoftoad/toadHEALTH/actions/workflows/gh-pages.yml/badge.svg" alt="Web demo" /></a>
