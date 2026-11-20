@@ -140,8 +140,10 @@ flutter pub get
 flutter run
 ```
 
-The Android platform folder is fully checked in, so `flutter build apk
---release` works out of the box. For iOS run:
+The Android platform folder is fully checked in. A local release build works
+unsigned unless you provide the persistent release-keystore environment
+variables in [RELEASE_SIGNING.md](RELEASE_SIGNING.md); never use the debug
+certificate for a published APK. For iOS run:
 
 ```bash
 flutter create . --platforms ios
