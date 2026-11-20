@@ -1,6 +1,5 @@
 plugins {
     id "com.android.application"
-    id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -17,22 +16,24 @@ def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "
 
 android {
     namespace = "com.toadhealth.app"
-    compileSdk = 34
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '1.8'
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        }
     }
 
     defaultConfig {
         applicationId = "com.toadhealth.app"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 37
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }
@@ -51,7 +52,8 @@ flutter {
 }
 
 dependencies {
-    // Wear Data Layer transport for the WearOsBridge (companion wrist app).
-    // Device-to-device only - pulls no analytics, no ads, no network stack.
+    // Wear Data Layer transport for the opt-in wrist mirror. Google Play
+    // services uses encrypted Bluetooth when available and may relay
+    // end-to-end-encrypted payloads through Google Cloud when it is not.
     implementation "com.google.android.gms:play-services-wearable:18.1.0"
 }
