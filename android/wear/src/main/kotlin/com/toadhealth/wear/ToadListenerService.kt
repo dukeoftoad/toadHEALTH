@@ -1,6 +1,7 @@
 package com.toadhealth.wear
 
 import com.google.android.gms.wearable.MessageEvent
+import com.google.android.gms.wearable.Wearable
 import com.google.android.gms.wearable.WearableListenerService
 
 /**
