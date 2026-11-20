@@ -128,7 +128,8 @@ class WearOsBridge(private val activity: Activity) :
         sendToWrist(PATH_STATE, json.toByteArray(Charsets.UTF_8))
 
     /** Removes the cached health snapshot from every reachable wrist companion. */
-    fun clearState(): Boolean = sendToWrist(PATH_CLEAR, byteArrayOf())
+    fun clearState(clearedAt: Long): Boolean =
+        sendToWrist(PATH_CLEAR, clearedAt.toString().toByteArray(Charsets.UTF_8))
 
     private fun sendToWrist(path: String, bytes: ByteArray): Boolean {
         if (!isSupported()) return false
