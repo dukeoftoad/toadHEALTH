@@ -93,6 +93,14 @@ The smart-watch feature keeps the project's promises:
 Regenerate the launcher toad after artwork changes:
 `dart run flutter_launcher_icons`.
 
+## Release signing
+
+Release APKs use one persistent Android keystore for both the phone and Wear
+companion. The release workflow requires the repository secrets documented in
+[RELEASE_SIGNING.md](RELEASE_SIGNING.md); it fails closed when they are absent.
+Local release builds without those values are unsigned. Debug builds are
+unaffected.
+
 ## Wear OS companion (v1.3)
 
 The toad now hops onto the wrist: `android/wear` is a tiny **native Kotlin
