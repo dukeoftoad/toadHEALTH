@@ -22,7 +22,7 @@ data class PondState(
     val hrOn: Boolean = false,
     val ts: Long = 0L,
 ) {
-    val isEmpty: Boolean get() = ts == 0
+    val isEmpty: Boolean get() = ts <= 0L
 }
 
 /**
@@ -128,7 +128,7 @@ object ToadStateStore {
     fun clear(context: Context) {
         lastJson = null
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().remove(KEY_STATE).apply()
+            .edit().remove(KEY_STATE).commit()
         if (activityListening) onCleared?.invoke()
     }
 
