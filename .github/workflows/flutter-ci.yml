@@ -45,6 +45,14 @@ jobs:
       - name: Build debug APK
         run: flutter build apk --debug
 
+      # The root `assembleDebug` above already compiles :wear (it runs in
+      # every project that has the task); this step uploads its APK.
+      - name: Upload wear debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: toadhealth-wear-debug-apk
+          path: android/wear/build/outputs/apk/debug/wear-debug.apk
+
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
         with:
