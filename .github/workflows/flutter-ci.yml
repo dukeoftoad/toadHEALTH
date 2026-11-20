@@ -9,7 +9,7 @@ on:
 jobs:
   analyze-and-build:
     name: Analyze and debug build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,9 +26,6 @@ jobs:
           flutter-version: "3.50.0"
           channel: stable
           cache: true
-
-      - name: Install Android API 37
-        run: "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_HOME" "platforms;android-37" "build-tools;36.0.0"
 
       - name: Remove generated template test
         run: rm -f test/widget_test.dart
