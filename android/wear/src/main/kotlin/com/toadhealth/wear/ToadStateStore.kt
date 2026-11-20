@@ -3,6 +3,20 @@ package com.toadhealth.wear
 import android.content.Context
 import org.json.JSONObject
 
+/** One typed pond snapshot mirrored from the phone. */
+data class PondState(
+    val steps: Int = 0,
+    val stepsGoal: Int = 8000,
+    val water: Int = 0,
+    val waterGoal: Int = 8,
+    val sleepMin: Int = 0,
+    val hr: Int = 0,
+    val hrOn: Boolean = false,
+    val ts: Int = 0,
+) {
+    val isEmpty: Boolean get() = ts == 0
+}
+
 /**
  * Holds the newest pond snapshot received from the phone.
  *
@@ -48,20 +62,23 @@ object ToadStateStore {
         }
     }
 
-    /** Parses the stored snapshot into a map; empty map when nothing stored. */
-    fun parse(json: String?): Map<String, Any> {
-        val out = HashMap<String, Any>()
-        if (json.isNullOrBlank()) return out
-        try {
+    /** Parses the stored snapshot; defaults cover a blank first boot. */
+    fun parseState(json: String?): PondState {
+        if (json.isNullOrBlank()) return PondState()
+        return try {
             val obj = JSONObject(json)
-            for (key in listOf(
-                "steps", "stepsGoal", "water", "waterGoal",
-                "sleepMin", "hr", "hrOn", "ts"
-            )) {
-                if (obj.has(key)) out[key] = obj.get(key)
-            }
+            PondState(
+                steps = obj.optInt("steps", 0),
+                stepsGoal = obj.optInt("stepsGoal", 8000),
+                water = obj.optInt("water", 0),
+                waterGoal = obj.optInt("waterGoal", 8),
+                sleepMin = obj.optInt("sleepMin", 0),
+                hr = obj.optInt("hr", 0),
+                hrOn = obj.optBoolean("hrOn", false),
+                ts = obj.optInt("ts", 0),
+            )
         } catch (_: Exception) {
+            PondState()
         }
-        return out
     }
 }

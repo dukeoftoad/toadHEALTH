@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.wear.widget.BoxInsetLayout
+<!-- Plain framework layout: a centred column with generous padding that
+     clears round watch bezels on both round and square faces. -->
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/wrist_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:paddingTop="18dp"
-        app:boxedEdges="all">
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
 
         <com.toadhealth.wear.ToadView
             android:id="@+id/toad"
@@ -120,4 +124,4 @@
             android:fontFamily="@font/patrick_hand"
             android:textColor="@color/wrist_ink_soft" />
     </LinearLayout>
-</androidx.wear.widget.BoxInsetLayout>
+</FrameLayout>

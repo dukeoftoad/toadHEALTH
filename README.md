@@ -100,8 +100,7 @@ talks back.
   step bursts stay calm.
 - **The wrist is alive** - the companion draws the same hand-inked toad at
   runtime (blinking, breathing, hopping on goal quarters), shows big
-  handwritten numbers in Caveat, supports round and square watches, and
-  dims properly in ambient mode.
+  handwritten numbers in Caveat, and fits round and square watch faces.
 - **Quick logs** - "+1 glass" on the wrist logs water on the phone; a ping
   on wrist wake pulls a fresh snapshot. A background listener keeps the
   last pond state warm so the companion opens instantly.

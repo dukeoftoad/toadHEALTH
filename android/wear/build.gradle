@@ -7,6 +7,11 @@ plugins {
 // wrist and mirrors the pond (steps / water / sleep / heart rate) while the
 // phone runs the Flutter app. Built separately with `:wear:assembleRelease`;
 // the Flutter toolchain never touches this module.
+//
+// Dependency policy: the ONLY external library is play-services-wearable
+// (classes only, proven to compile in CI alongside the phone app). Every
+// resource the wrist app links is either framework- or local-owned, so the
+// aapt2 link never depends on an AAR's resource table.
 android {
     namespace = "com.toadhealth.wear"
     compileSdk = 34
@@ -39,10 +44,6 @@ android {
 }
 
 dependencies {
-    implementation "androidx.appcompat:appcompat:1.6.1"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
-    // Ambient mode support (dim-on-idle burn-in protection).
-    implementation "androidx.wear:wear:1.3.0"
     // The Wear Data Layer transport: device-to-device messages over the
     // watch Bluetooth/USB bridge. No cloud endpoint, no account, no data
     // ever leaves the two paired devices.
