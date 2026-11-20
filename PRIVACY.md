@@ -7,8 +7,8 @@ but verifiable properties of the code in this repository.
 
 | Claim | How it is enforced |
 | --- | --- |
-| No data sent to Google | No Firebase, no Health Connect, no Google Fit, no reCAPTCHA, no Crashlytics. The only runtime dependencies are the pure-Dart `cryptography` package and (Android only) `play-services-wearable`, used purely as the Wear Data Layer **transport pipe** for the opt-in wrist mirror - see the Wear OS note below. |
-| No data sent anywhere | The Android manifest declares **no `INTERNET` permission** - the OS prevents the app from opening network sockets at all. The Wear Data Layer is device-to-device over the paired Bluetooth link; it has no cloud endpoint in its protocol. |
+| No first-party telemetry or health backend | No Firebase, no Health Connect, no Google Fit, no reCAPTCHA, no Crashlytics, and no toadHEALTH-operated server. The opt-in Wear OS companion does use Google Play services' Wear Data Layer, including its Google Cloud relay fallback described below. |
+| No app-owned Internet client | The phone and watch source manifests do not request **`INTERNET`**. This does not prevent Google Play services from using its own network connection to relay Wear Data Layer messages through Google-owned servers when Bluetooth is unavailable. |
 | No analytics / telemetry | None present. Nothing to opt out of. |
 | No Android cloud backup of your records | `android:allowBackup="false"` - the vault is excluded from Google Drive device backup and device-transfer. |
 | No third-party plugins with hidden network calls | Step counter and Keystore are **our own ~150-line Kotlin channels** in `MainActivity.kt` (AOSP sensor API + Android Keystore). The dependency audit is one file long. |
@@ -25,17 +25,23 @@ but verifiable properties of the code in this repository.
 - Lets you erase everything and re-key the vault in one tap.
 - Optionally (off by default, one toggle) mirrors steps / water / sleep /
   heart-rate snapshots to a paired Wear OS watch running the companion APK,
-  and accepts quick logs back from the wrist. Snapshots cross only the
-  Bluetooth link between the two paired devices.
+  and accepts quick logs back from the wrist. The Wear Data Layer uses an
+  encrypted Bluetooth connection when available. If Bluetooth is unavailable,
+  Google Play services automatically routes the payload through a
+  Google-owned cloud node; Google documents that cloud path as end-to-end
+  encrypted. The payload can therefore transit Google infrastructure even
+  though toadHEALTH operates no backend server.
 
 ## The Wear OS companion (opt-in)
 
 - Off by default: the mirror toggle lives in the Pond Watch screen and is
   persisted in the encrypted vault (`wearMirror`).
-- Transport, not a service: the Wear Data Layer carries messages between the
-  phone and the watch you own. No account, no cloud copy, no server. Your
-  health numbers travel phone-to-wrist like a phone call travels phone-to-
-  phone - the pipe is necessary, the destination is yours.
+- Google-operated transport: the Wear Data Layer carries messages between
+  your phone and watch. It uses encrypted Bluetooth when available. If
+  Bluetooth is unavailable, Google Play services can relay the payload
+  through Google-owned servers; Google documents this fallback as
+  end-to-end encrypted. toadHEALTH does not operate that relay or its own
+  backend, but the data may transit Google infrastructure.
 - No-Googled-ROMs stay first-class: without Play Services the bridge reports
   "unsupported", the toggle is inert, and every other feature is untouched.
 - The wear APK declares no `INTERNET` permission either.
@@ -43,8 +49,9 @@ but verifiable properties of the code in this repository.
 ## Permissions (Android)
 
 - Runtime permissions: **none**.
-- `INTERNET`: **not declared** - network access is impossible (phone app
-  and wear companion alike).
+- `INTERNET`: not requested by the phone or Wear app source manifests.
+  Google Play services may still use its own network permission and connection
+  for the Wear Data Layer cloud relay described above.
 - Step counter sensor: normal-protection-level sensor, no permission prompt,
   no Play Services involvement.
 - Wear companion module: `WAKE_LOCK` (ambient display dimming only).
@@ -61,9 +68,11 @@ but verifiable properties of the code in this repository.
 1. `cryptography` (pub.dev, pure Dart) - AES-GCM and PBKDF2 implementations.
    No network, no telemetry.
 2. `play-services-wearable` (Google Maven, Android only) - the Wear Data
-   Layer client for the opt-in wrist mirror. It exchanges messages with the
-   companion app on your paired watch; it ships no ads, no analytics and no
-   cloud upload calls of ours. Omit the toggle and the code paths stay idle.
+   Layer client for the opt-in wrist mirror. Google Play services transports
+   messages over encrypted Bluetooth when available and may use an
+   end-to-end-encrypted Google Cloud relay when it is not. No ads, analytics,
+   or toadHEALTH-operated upload service are included; the mirror is off by
+   default.
 3. Flutter SDK / build tooling - compiles the app; ships no runtime telemetry
    of ours (Flutter's own analytics are a CLI-side, opt-out tool concern and
    are not part of the built app).
