@@ -29,6 +29,9 @@ lib/
     watch_link.dart          our own channel to plain BLE GATT - the smart-watch
                              link (standard Heart Rate Profile 0x180D/0x2A37 +
                              Battery 0x180F/0x2A19; native side in WatchLink.kt)
+    wear_os.dart             our own channel to the Wear Data Layer - the Wear OS
+                             companion bridge (phone -> wrist /toad/state,
+                             wrist -> phone /toad/command; native WearOsBridge.kt)
     vault_crypto.dart        AES-256-GCM envelopes ("TAEG" framing),
                              PBKDF2-HMAC-SHA256 derivation, recovery codes
     vault_store.dart         storage abstraction + conditional export
@@ -46,9 +49,13 @@ lib/
     app_controller.dart      AppController (ChangeNotifier): aggregates,
                              streaks, hourly buckets, debounced persistence,
                              plus the WatchController (watch link state machine)
+                             and the WearOsController (wrist mirror + commands)
     watch_controller.dart    watch connection states (off / scanning /
                              connecting / connected), BPM + battery buffers,
                              and the clearly-labelled demo buddy
+    wear_os_controller.dart  Wear OS companion state (unsupported / idle /
+                             wrist ready), throttled pond mirroring, wrist
+                             command decoding (log_water, ping)
     app_services.dart        boot orchestration + tiny service locator
 
   ui (lib root)              sketchy.dart, toad_painter.dart, icon_painter.dart,
@@ -134,6 +141,17 @@ blobs).
   EventChannel events into the WatchController state machine; a one-tap,
   clearly-labelled demo buddy covers emulators and the web build. Heartbeat
   samples are session-only and are never persisted into the vault.
+- **ADR-10: the Wear OS companion is an opt-in Data Layer app, not a silent
+  dependency.** BLE GATT (ADR-9) reads FROM a watch; a companion runs ON the
+  watch. The `android/wear` Gradle module is a tiny native Kotlin app (no
+  Flutter engine, ~600 lines total) that mirrors pond snapshots and sends
+  quick logs back over the Wear Data Layer - a device-to-device transport
+  between the two paired gadgets only; no cloud endpoint exists in the
+  protocol. The phone still declares no INTERNET permission and the mirror
+  is off by default (`settings.wearMirror`, persisted in the vault). On ROMs
+  without Play Services the bridge reports unsupported and everything else
+  keeps hopping - the de-Googled core does not depend on it. Snapshots are
+  coalesced (>= 900 ms) so step bursts do not hammer the wrist.
 
 ## Extending
 

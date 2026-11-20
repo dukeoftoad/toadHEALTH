@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.wear.widget.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/wrist_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="18dp"
+        app:boxedEdges="all">
+
+        <com.toadhealth.wear.ToadView
+            android:id="@+id/toad"
+            android:layout_width="96dp"
+            android:layout_height="64dp" />
+
+        <TextView
+            android:id="@+id/steps_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="0"
+            android:textSize="44sp"
+            android:fontFamily="@font/caveat"
+            android:textStyle="bold"
+            android:textColor="@color/wrist_ink" />
+
+        <TextView
+            android:id="@+id/steps_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/steps_label"
+            android:textSize="13sp"
+            android:fontFamily="@font/patrick_hand"
+            android:textColor="@color/wrist_ink_soft" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/water_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="22sp"
+                android:fontFamily="@font/caveat"
+                android:textStyle="bold"
+                android:textColor="@color/wrist_pond" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/water_label"
+                android:textSize="13sp"
+                android:fontFamily="@font/patrick_hand"
+                android:textColor="@color/wrist_ink_soft" />
+
+            <TextView
+                android:id="@+id/sleep_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="0h"
+                android:textSize="22sp"
+                android:fontFamily="@font/caveat"
+                android:textStyle="bold"
+                android:textColor="@color/wrist_lilypad" />
+
+            <TextView
+                android:id="@+id/hr_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="—"
+                android:textSize="22sp"
+                android:fontFamily="@font/caveat"
+                android:textStyle="bold"
+                android:textColor="@color/wrist_coral" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:text="@string/hr_label"
+                android:textSize="13sp"
+                android:fontFamily="@font/patrick_hand"
+                android:textColor="@color/wrist_ink_soft" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/water_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/water_button_bg"
+            android:fontFamily="@font/patrick_hand"
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:text="@string/log_water"
+            android:textColor="@color/wrist_bg"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/status_line"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/status_waiting"
+            android:textSize="13sp"
+            android:fontFamily="@font/patrick_hand"
+            android:textColor="@color/wrist_ink_soft" />
+    </LinearLayout>
+</androidx.wear.widget.BoxInsetLayout>

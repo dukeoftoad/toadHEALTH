@@ -49,3 +49,9 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Wear Data Layer transport for the WearOsBridge (companion wrist app).
+    // Device-to-device only - pulls no analytics, no ads, no network stack.
+    implementation "com.google.android.gms:play-services-wearable:18.1.0"
+}

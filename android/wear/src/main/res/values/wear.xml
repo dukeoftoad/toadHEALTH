@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The wrist advertises this capability once the companion is installed.
+     The phone uses it to tell "a paired watch" apart from "a wrist that
+     actually wears the toad". -->
+<resources xmlns:android-wear="http://schemas.google.com/android/wear">
+    <android-wear:capabilities>
+        <android-wear:capability name="toadhealth_wrist" />
+    </android-wear:capabilities>
+</resources>

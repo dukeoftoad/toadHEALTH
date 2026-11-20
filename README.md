@@ -88,6 +88,35 @@ The smart-watch feature keeps the project's promises:
 Regenerate the launcher toad after artwork changes:
 `dart run flutter_launcher_icons`.
 
+## Wear OS companion (v1.3)
+
+The toad now hops onto the wrist: `android/wear` is a tiny **native Kotlin
+companion app** (no Flutter engine on board) that mirrors your pond and
+talks back.
+
+- **Mirror the pond** - flip "Mirror pond to wrist" in the Pond Watch
+  screen; steps, water glasses, sleep and the linked heart rate travel to
+  the watch as compact snapshots over the Wear Data Layer, coalesced so
+  step bursts stay calm.
+- **The wrist is alive** - the companion draws the same hand-inked toad at
+  runtime (blinking, breathing, hopping on goal quarters), shows big
+  handwritten numbers in Caveat, supports round and square watches, and
+  dims properly in ambient mode.
+- **Quick logs** - "+1 glass" on the wrist logs water on the phone; a ping
+  on wrist wake pulls a fresh snapshot. A background listener keeps the
+  last pond state warm so the companion opens instantly.
+- **Opt-in and honest** - the mirror is off by default and the toggle is
+  persisted in the encrypted vault. The Data Layer is a device-to-device
+  transport between your phone and your watch; the phone app still declares
+  **no INTERNET permission**. On de-Googled ROMs without Play Services the
+  card reports "unsupported" and everything else keeps hopping.
+- **The BLE heart-rate buddy stays** - Pond Watch's GATT link (below) is
+  untouched; the two watch features are independent and complementary.
+
+Install the companion: grab `toadHEALTH-wear.apk` from a Release and
+`adb install` it on the watch (Wear OS 3+), then open it once and flip the
+mirror toggle on the phone.
+
 ## Getting started
 
 Requires Flutter 3.22+ (any channel).
@@ -116,8 +145,8 @@ flutter build apk --release
 
 | Workflow | Trigger | What it does |
 | --- | --- | --- |
-| `flutter-ci.yml` | push / pull request | `flutter analyze` + debug APK build, uploads APK artifact |
-| `release-apk.yml` | tag `v*` / manual | release APK build, attached to a GitHub Release |
+| `flutter-ci.yml` | push / pull request | `flutter analyze` + debug APK builds (phone and wear), uploads both artifacts |
+| `release-apk.yml` | tag `v*` / manual | release APK builds (phone + wear), attached to a GitHub Release |
 | `gh-pages.yml` | push to main / manual | Flutter web (HTML renderer) deployed to GitHub Pages |
 
 Live web demo: <https://dukeoftoad.github.io/toadHEALTH/>
@@ -135,6 +164,7 @@ lib/
   screens/                lock screen, manual log sheets
   ...                     sketchy engine, toad painter, icons, charts,
                           widgets, theme, nav shell, five screens
+android/wear/            Wear OS companion module (native Kotlin wrist app)
 ```
 
 ## License

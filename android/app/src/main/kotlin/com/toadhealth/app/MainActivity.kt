@@ -37,6 +37,12 @@ import javax.crypto.spec.GCMParameterSpec
  *     over plain BLE GATT (standard Heart Rate Profile + Battery),
  *     implemented in WatchLink.kt. No Wear Data Layer, no Play Services,
  *     no network - the watch hops straight onto the pond.
+ *
+ *  4. "toadhealth/wear_os" + "toadhealth/wear_os_events" - the Wear OS
+ *     companion bridge (see WearOsBridge.kt): mirrors pond snapshots to the
+ *     android/wear wrist app over the Wear Data Layer and receives quick
+ *     logs back. When Play Services are missing (de-Googled ROMs) the
+ *     bridge quietly reports unsupported and everything else stands.
  */
 class MainActivity : FlutterActivity() {
 
@@ -135,6 +141,41 @@ class MainActivity : FlutterActivity() {
             override fun onCancel(args: Any?) {
                 link.stopScan()
                 link.setSink(null)
+            }
+        })
+
+        // ---------- Wear OS companion (Data Layer - see WearOsBridge.kt) ----------
+
+        val wearOs = WearOsBridge(this)
+
+        MethodChannel(messenger, "toadhealth/wear_os").setMethodCallHandler { call, result ->
+            try {
+                when (call.method) {
+                    "isSupported" -> result.success(wearOs.isSupported())
+                    "sendState" -> {
+                        val json = call.argument<String>("json")
+                        if (json == null) {
+                            result.error("BAD_ARGS", "missing 'json'", null)
+                        } else {
+                            result.success(wearOs.sendState(json))
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (e: Exception) {
+                result.error("WEAROS_ERROR", e.message, null)
+            }
+        }
+
+        EventChannel(messenger, "toadhealth/wear_os_events").setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(args: Any?, events: EventChannel.EventSink) {
+                wearOs.setSink(events)
+                wearOs.start()
+            }
+
+            override fun onCancel(args: Any?) {
+                wearOs.setSink(null)
+                wearOs.stop()
             }
         })
     }
