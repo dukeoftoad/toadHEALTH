@@ -8,10 +8,11 @@ import 'package:flutter/services.dart';
 /// the BLE heart-rate buddy, this one is a real companion app running on
 /// the wrist: it mirrors pond snapshots and sends quick logs back.
 ///
-/// Privacy: the Data Layer is a device-to-device pipe over the paired
-/// Bluetooth link. No cloud endpoint, no account, no network permission on
-/// either side. On de-Googled ROMs without Play Services the channel is
-/// simply unsupported and every other part of the pond keeps hopping.
+/// Privacy: the Data Layer uses encrypted Bluetooth when available.
+/// Google Play services can relay end-to-end-encrypted payloads through
+/// Google-owned cloud servers when Bluetooth is unavailable. toadHEALTH
+/// operates no backend of its own. Without Play Services the channel is
+/// unsupported and every other part of the pond keeps hopping.
 class WearOs {
   static const MethodChannel _channel = MethodChannel('toadhealth/wear_os');
   static const EventChannel _events = EventChannel('toadhealth/wear_os_events');
