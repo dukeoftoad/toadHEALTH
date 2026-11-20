@@ -4,6 +4,8 @@ import android.app.Activity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import com.google.android.gms.wearable.CapabilityClient
+import com.google.android.gms.wearable.Wearable
 import org.json.JSONObject
 
 /**
@@ -99,17 +101,21 @@ class WearActivity : Activity() {
     private fun sendCommand(payload: JSONObject) {
         val bytes = payload.toString().toByteArray(Charsets.UTF_8)
         try {
-            Wearable.getNodeClient(this).getConnectedNodes().addOnSuccessListener { nodes ->
-                val client = Wearable.getMessageClient(this)
-                for (node in nodes) {
-                    try {
+            Wearable.getCapabilityClient(this)
+                .getCapability(PHONE_CAPABILITY, CapabilityClient.FILTER_REACHABLE)
+                .addOnSuccessListener { info ->
+                    val client = Wearable.getMessageClient(this)
+                    for (node in info.nodes) {
                         client.sendMessage(node.id, "/toad/command", bytes)
-                    } catch (_: Exception) {
+                            .addOnFailureListener { }
                     }
                 }
-            }
         } catch (_: Exception) {
         }
+    }
+
+    companion object {
+        private const val PHONE_CAPABILITY = "toadhealth_phone"
     }
 
     // ---------- rendering ----------
