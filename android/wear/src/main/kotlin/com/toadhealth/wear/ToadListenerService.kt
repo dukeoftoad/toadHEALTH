@@ -21,7 +21,11 @@ class ToadListenerService : WearableListenerService() {
                 val json = String(event.data, Charsets.UTF_8)
                 ToadStateStore.save(this, json)
             }
-            "/toad/clear" -> ToadStateStore.clear(this)
+            "/toad/clear" -> {
+                val clearedAt = String(event.data, Charsets.UTF_8)
+                    .toLongOrNull() ?: System.currentTimeMillis()
+                ToadStateStore.clear(this, clearedAt)
+            }
         }
     }
 
