@@ -88,7 +88,12 @@ class WearActivity : Activity() {
         ToadStateStore.onFreshState = freshState
         ToadStateStore.onCleared = clearedState
         ToadStateStore.load(this)
-        ToadStateStore.lastJson?.let { render(it) }
+        val cached = ToadStateStore.lastJson
+        if (cached == null) {
+            clearedState()
+        } else {
+            render(cached)
+        }
         // Ask the phone pond for a fresh snapshot (it replies with /toad/state).
         sendCommand(JSONObject().put("action", "ping"))
     }
