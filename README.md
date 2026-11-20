@@ -52,13 +52,41 @@ backend - see [ARCHITECTURE.md](ARCHITECTURE.md):
   density: legacy icons plus an adaptive foreground/background pair.
   Regenerate after artwork changes with `dart run flutter_launcher_icons`.
 - **Toad navigation** - the bottom nav is a pond the toad hops across.
+- **Pond Watch** - wire an Android smart watch (or any BLE heart-rate strap)
+  straight onto the pond over the standard Bluetooth Heart Rate Profile -
+  no Play Services, no Wear Data Layer, no network. The toad literally
+  paces its run to your live heartbeat, beats becoming hops per minute.
 - **Flowing transitions** - screens drift in like lily pads.
 - **Handwritten typography** - Caveat and Gochi Hand bundled locally.
 
 ## Screens
 
 Splash (toad hops in) -> Lock screen (if app password is set) -> Home pond ->
-Motion / Water / Sleep / You (security, backups, data).
+Motion / Water / Sleep / You (security, backups, data). Tap the Pond Watch
+strip on Home to drift into the watch screen: scan the pond, pick your
+buddy, and watch the toad jog to your heartbeats (a clearly-labelled demo
+buddy is one tap away on emulators and web).
+
+## Watch link (v1.2)
+
+The smart-watch feature keeps the project's promises:
+
+- **Standard profile, not a walled garden** - the native `WatchLink.kt`
+  GATT client speaks the Bluetooth Heart Rate Service (`0x180D` ->
+  `0x2A37`, BPM notifications) and Battery Service (`0x180F` -> `0x2A19`).
+  Wear OS watches expose these while sharing their sensor; most BLE
+  heart-rate straps always do.
+- **Still de-Googled** - no Play Services dependency, no Wear Data Layer,
+  and the manifest still has **no INTERNET permission**; BLE permissions
+  carry `neverForLocation`.
+- **Honest states** - scanning radar, hop-over handshake, live BPM ring,
+  sparkline, battery, zone copy. Errors tell you what actually went wrong
+  (permission, Bluetooth off, no heart-rate service).
+- **Demo buddy** - one tap gives a clearly-labelled simulated heartbeat so
+  emulators, web and reviewers can explore the full flow without hardware.
+
+Regenerate the launcher toad after artwork changes:
+`dart run flutter_launcher_icons`.
 
 ## Getting started
 

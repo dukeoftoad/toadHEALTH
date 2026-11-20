@@ -10,6 +10,7 @@ import 'data.dart';
 import 'icon_painter.dart';
 import 'profile_screen.dart';
 import 'screens/log_sheets.dart';
+import 'screens/watch_screen.dart';
 import 'sleep_screen.dart';
 import 'state/app_services.dart';
 import 'theme.dart';
@@ -128,6 +129,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     if (!HealthData.firstRunDone) _buildWelcomeCard(),
                     if (!HealthData.firstRunDone) const SizedBox(height: 16),
                     _buildHeroCard(),
+                    const SizedBox(height: 16),
+                    _buildWatchCard(),
                     const SizedBox(height: 20),
                     const SectionHeader(title: 'Vitals', accent: ToadColors.toad),
                     const SizedBox(height: 10),
@@ -276,6 +279,73 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 2),
               const Text("today's hops", style: ToadText.label),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  /// The watch-link strip: live buddy status on the pond dashboard.
+  /// Tap it to drift over to the Pond Watch screen (FlowRoute).
+  Widget _buildWatchCard() {
+    return SketchCard(
+      seed: 2.6,
+      padding: const EdgeInsets.all(14),
+      child: AnimatedBuilder(
+        animation: AppServices.watch,
+        builder: (context, _) {
+          final w = AppServices.watch;
+          final linked = w.connected;
+          final subtitle = linked
+              ? (w.demoMode
+                  ? 'demo buddy pacing your heartbeat'
+                  : w.bpm > 0
+                      ? '${w.bpm} bpm - the toad is pacing it'
+                      : 'waiting for the first heartbeat')
+              : 'wire a smart watch over bluetooth';
+          return Row(
+            children: [
+              const SketchIcon(
+                icon: ToadIcon.watch,
+                size: 26,
+                color: ToadColors.pondDeep,
+                seed: 6,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      linked
+                          ? (w.device?.name ?? 'Pond buddy')
+                          : 'Pond Watch',
+                      style: ToadText.body,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(subtitle, style: ToadText.label),
+                  ],
+                ),
+              ),
+              if (linked && w.bpm > 0)
+                Text(
+                  '${w.bpm}',
+                  style: ToadText.h2.copyWith(color: ToadColors.coral),
+                ),
+              const SizedBox(width: 8),
+              SketchButton(
+                onTap: () => _open(const WatchScreen()),
+                padding: const EdgeInsets.all(8),
+                radius: 24,
+                seed: 5.5,
+                child: const SketchIcon(
+                  icon: ToadIcon.chevron,
+                  size: 20,
+                  color: ToadColors.toadDeep,
+                  seed: 13,
+                ),
+              ),
             ],
           );
         },
