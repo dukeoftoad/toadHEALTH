@@ -41,6 +41,10 @@ class Appearance extends ChangeNotifier {
   /// (tests inject an in-memory one); production leaves it out.
   Future<void> load({VaultStore? store}) async {
     _store = store ?? await createDefaultStore();
+    // Start from the paper default so a torn or unreadable file lands
+    // deterministically there, whatever this process had in memory.
+    _style = ToadThemeStyle.sketchbook;
+    _mode = ToadMode.system;
     try {
       final raw = await _store!.readText(_fileName);
       if (raw != null && raw.isNotEmpty) {
