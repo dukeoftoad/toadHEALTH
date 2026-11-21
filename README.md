@@ -58,6 +58,16 @@ backend - see [ARCHITECTURE.md](ARCHITECTURE.md):
 - **Flowing transitions** - screens drift in like lily pads.
 - **Handwritten typography** - Caveat and Gochi Hand bundled locally.
 
+## In-app updates (v1.4)
+
+The About section (You tab) checks GitHub for a newer release - a plain
+GET to the repo's `releases/latest`, on your tap or once silently on app
+open, never periodically. A newer release raises a quiet home banner;
+nothing downloads until you tap "Download & install", which pulls the APK
+through the system download manager and hands it to the package
+installer. Nothing about the device, the vault or the health records is
+ever sent; this is the app's only network path (see PRIVACY.md).
+
 ## Appearance (v1.4)
 
 The paper the toad is drawn on is a choice, in the You tab's new

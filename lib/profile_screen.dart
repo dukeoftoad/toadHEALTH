@@ -12,6 +12,8 @@ import 'icon_painter.dart';
 import 'sketchy.dart';
 import 'state/app_services.dart';
 import 'theme.dart';
+import 'update/update_card.dart';
+import 'update/update_checker.dart' show appVersion;
 import 'toad_painter.dart';
 import 'widgets.dart';
 
@@ -390,6 +392,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SectionHeader(title: 'About', accent: ToadColors.toad),
                 const SizedBox(height: 10),
                 _buildAbout(),
+                const SizedBox(height: 14),
+                // The self-update flow: check GitHub, download, install.
+                const UpdateCard(),
                 const SizedBox(height: 24),
                 Center(
                   child: Text('local-first. de-googled. toad-approved.',
@@ -574,9 +579,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 8),
           Text(
             'Your health data is encrypted with AES-256-GCM. On Android the '
-            'master key is guarded by the hardware Keystore. This app has no '
-            'INTERNET permission - records physically cannot leave the '
-            'device.',
+            'master key is guarded by the hardware Keystore. The only '
+            'network the app ever speaks is the update check on GitHub - '
+            'records physically cannot leave the device.',
             style: ToadText.label,
           ),
           const SizedBox(height: 12),
@@ -715,7 +720,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('toadHEALTH v1.1.0', style: ToadText.body),
+                Text('toadHEALTH v'$appVersion, style: ToadText.body),
                 const SizedBox(height: 2),
                 Text(
                   'Local-first, end-to-end encrypted, zero trackers. Every '
