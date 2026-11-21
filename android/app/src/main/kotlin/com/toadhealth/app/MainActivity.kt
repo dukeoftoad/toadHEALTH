@@ -55,6 +55,9 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         val messenger = flutterEngine.dartExecutor.binaryMessenger
 
+        // The self-update flow's native half: download + installer handoff.
+        UpdatePlugin.register(this, messenger)
+
         MethodChannel(messenger, "toadhealth/vault").setMethodCallHandler { call, result ->
             try {
                 when (call.method) {
