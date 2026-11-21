@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart' as material_ui;
 
 import 'appearance.dart';
 import 'splash.dart';
@@ -57,11 +58,15 @@ class _ToadHealthAppState extends State<ToadHealthApp> {
               debugShowCheckedModeBanner: false,
               theme: appearance.themeFor(
                 Brightness.light,
-                dynamicScheme: lightDynamic?.harmonized(),
+                dynamicScheme: _toFlutterColorScheme(
+                  lightDynamic?.harmonized(),
+                ),
               ),
               darkTheme: appearance.themeFor(
                 Brightness.dark,
-                dynamicScheme: darkDynamic?.harmonized(),
+                dynamicScheme: _toFlutterColorScheme(
+                  darkDynamic?.harmonized(),
+                ),
               ),
               themeMode: switch (appearance.mode) {
                 ToadMode.system => ThemeMode.system,
@@ -75,6 +80,50 @@ class _ToadHealthAppState extends State<ToadHealthApp> {
       },
     );
   }
+}
+
+/// dynamic_color hands out its own ColorScheme type (from the material_ui
+/// package); the app's themes speak Flutter's. Copy the palette across,
+/// field by field, so the wallpaper colors survive the crossing.
+ColorScheme? _toFlutterColorScheme(material_ui.ColorScheme? scheme) {
+  if (scheme == null) return null;
+  return ColorScheme.fromSeed(
+    seedColor: scheme.primary,
+    brightness: scheme.brightness,
+  ).copyWith(
+    primary: scheme.primary,
+    onPrimary: scheme.onPrimary,
+    primaryContainer: scheme.primaryContainer,
+    onPrimaryContainer: scheme.onPrimaryContainer,
+    secondary: scheme.secondary,
+    onSecondary: scheme.onSecondary,
+    secondaryContainer: scheme.secondaryContainer,
+    onSecondaryContainer: scheme.onSecondaryContainer,
+    tertiary: scheme.tertiary,
+    onTertiary: scheme.onTertiary,
+    tertiaryContainer: scheme.tertiaryContainer,
+    onTertiaryContainer: scheme.onTertiaryContainer,
+    error: scheme.error,
+    onError: scheme.onError,
+    errorContainer: scheme.errorContainer,
+    onErrorContainer: scheme.onErrorContainer,
+    outline: scheme.outline,
+    outlineVariant: scheme.outlineVariant,
+    surface: scheme.surface,
+    onSurface: scheme.onSurface,
+    surfaceContainerLowest: scheme.surfaceContainerLowest,
+    surfaceContainerLow: scheme.surfaceContainerLow,
+    surfaceContainer: scheme.surfaceContainer,
+    surfaceContainerHigh: scheme.surfaceContainerHigh,
+    surfaceContainerHighest: scheme.surfaceContainerHighest,
+    onSurfaceVariant: scheme.onSurfaceVariant,
+    inverseSurface: scheme.inverseSurface,
+    onInverseSurface: scheme.onInverseSurface,
+    inversePrimary: scheme.inversePrimary,
+    shadow: scheme.shadow,
+    surfaceTint: scheme.surfaceTint,
+    scrim: scheme.scrim,
+  );
 }
 
 /// Flowing page transition: a gentle rise and fade, like a lily pad drifting.
