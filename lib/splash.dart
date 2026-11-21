@@ -103,7 +103,7 @@ class _SplashScreenState extends State<SplashScreen>
                       opacity: titleOpacity,
                       child: Column(
                         children: [
-                          const Text('toadHEALTH', style: ToadText.display),
+                          Text('toadHEALTH', style: ToadText.display),
                           SizedBox(
                             height: 8,
                             width: 130,
@@ -112,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text('hop your way to healthy', style: ToadText.label),
+                          Text('hop your way to healthy', style: ToadText.label),
                         ],
                       ),
                     ),

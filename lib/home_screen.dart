@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   children: [
                     Row(
                       children: [
-                        const SketchIcon(
+                        SketchIcon(
                           icon: ToadIcon.run,
                           size: 26,
                           color: ToadColors.toadDeep,
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const Spacer(),
                         GestureDetector(
                           onTap: () => _open(const ProfileScreen()),
-                          child: const SketchIcon(
+                          child: SketchIcon(
                             icon: ToadIcon.gear,
                             size: 24,
                             color: ToadColors.inkSoft,
@@ -132,15 +132,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const SizedBox(height: 16),
                     _buildWatchCard(),
                     const SizedBox(height: 20),
-                    const SectionHeader(title: 'Vitals', accent: ToadColors.toad),
+                    SectionHeader(title: 'Vitals', accent: ToadColors.toad),
                     const SizedBox(height: 10),
                     _buildVitals(),
                     const SizedBox(height: 20),
-                    const SectionHeader(title: 'This week', accent: ToadColors.toad),
+                    SectionHeader(title: 'This week', accent: ToadColors.toad),
                     const SizedBox(height: 10),
                     _buildWeekCard(),
                     const SizedBox(height: 20),
-                    const SectionHeader(title: "Toad's wisdom", accent: ToadColors.toad),
+                    SectionHeader(title: "Toad's wisdom", accent: ToadColors.toad),
                     const SizedBox(height: 10),
                     _buildTipCard(),
                     const SizedBox(height: 8),
@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         children: [
           Row(
             children: [
-              const SketchIcon(
+              SketchIcon(
                 icon: ToadIcon.sparkle,
                 size: 22,
                 color: ToadColors.sun,
@@ -174,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Everything you log stays on this device, sealed with AES-256 '
             'encryption. No account, no cloud, no tracking. Start with a '
             'walk or a glass of water - or set an app password under You.',
@@ -278,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
               const SizedBox(height: 2),
-              const Text("today's hops", style: ToadText.label),
+              Text("today's hops", style: ToadText.label),
             ],
           );
         },
@@ -306,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               : 'wire a smart watch over bluetooth';
           return Row(
             children: [
-              const SketchIcon(
+              SketchIcon(
                 icon: ToadIcon.watch,
                 size: 26,
                 color: ToadColors.pondDeep,
@@ -339,7 +339,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 padding: const EdgeInsets.all(8),
                 radius: 24,
                 seed: 5.5,
-                child: const SketchIcon(
+                child: SketchIcon(
                   icon: ToadIcon.chevron,
                   size: 20,
                   color: ToadColors.toadDeep,
@@ -419,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         children: [
           Row(
             children: [
-              const SketchIcon(
+              SketchIcon(
                 icon: ToadIcon.chart,
                 size: 20,
                 color: ToadColors.toadDeep,
@@ -446,7 +446,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 10),
           Row(
             children: [
-              const SketchIcon(
+              SketchIcon(
                 icon: ToadIcon.flame,
                 size: 18,
                 color: ToadColors.sun,
@@ -472,7 +472,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          const SketchIcon(
+          SketchIcon(
             icon: ToadIcon.leaf,
             size: 26,
             color: ToadColors.toad,
@@ -492,7 +492,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             padding: const EdgeInsets.all(8),
             radius: 24,
             seed: 9.1,
-            child: const SketchIcon(
+            child: SketchIcon(
               icon: ToadIcon.chevron,
               size: 20,
               color: ToadColors.toadDeep,

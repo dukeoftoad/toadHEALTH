@@ -10,8 +10,8 @@ import 'theme.dart';
 class SketchCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
-  final Color background;
-  final Color borderColor;
+  final Color? background;
+  final Color? borderColor;
   final double seed;
   final double wobble;
   final double rotation;
@@ -21,8 +21,8 @@ class SketchCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
-    this.background = ToadColors.paper,
-    this.borderColor = ToadColors.ink,
+    this.background,
+    this.borderColor,
     this.seed = 1.0,
     this.wobble = 1.2,
     this.rotation = 0,
@@ -31,6 +31,9 @@ class SketchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final background = this.background ?? ToadColors.paper;
+    final borderColor = this.borderColor ?? ToadColors.ink;
+
     return Transform.rotate(
       angle: rotation,
       child: Container(
@@ -113,8 +116,8 @@ class SketchBorderPainter extends CustomPainter {
 class SketchButton extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
-  final Color background;
-  final Color borderColor;
+  final Color? background;
+  final Color? borderColor;
   final EdgeInsets padding;
   final double radius;
   final double seed;
@@ -123,8 +126,8 @@ class SketchButton extends StatefulWidget {
     super.key,
     required this.child,
     this.onTap,
-    this.background = ToadColors.paper,
-    this.borderColor = ToadColors.ink,
+    this.background,
+    this.borderColor,
     this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
     this.radius = 18,
     this.seed = 1.0,
@@ -139,6 +142,8 @@ class _SketchButtonState extends State<SketchButton> {
 
   @override
   Widget build(BuildContext context) {
+    final background = widget.background ?? ToadColors.paper;
+    final borderColor = widget.borderColor ?? ToadColors.ink;
     return GestureDetector(
       onTap: widget.onTap,
       onTapDown: (_) => setState(() => _down = true),
@@ -150,7 +155,7 @@ class _SketchButtonState extends State<SketchButton> {
         curve: Curves.easeOut,
         child: Container(
           decoration: BoxDecoration(
-            color: widget.background,
+            color: background,
             borderRadius: BorderRadius.circular(widget.radius),
             boxShadow: const [
               BoxShadow(
@@ -166,7 +171,7 @@ class _SketchButtonState extends State<SketchButton> {
                 child: IgnorePointer(
                   child: CustomPaint(
                     painter: SketchBorderPainter(
-                      color: widget.borderColor,
+                      color: borderColor,
                       seed: widget.seed,
                       radius: widget.radius,
                       amp: 1.0,
@@ -186,18 +191,21 @@ class _SketchButtonState extends State<SketchButton> {
 /// A hand-drawn speech bubble with a little tail.
 class SpeechBubble extends StatelessWidget {
   final String text;
-  final Color color;
-  final Color textColor;
+  final Color? color;
+  final Color? textColor;
 
   const SpeechBubble({
     super.key,
     required this.text,
-    this.color = ToadColors.paper,
-    this.textColor = ToadColors.ink,
+    this.color,
+    this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final color = this.color ?? ToadColors.paper;
+    final textColor = this.textColor ?? ToadColors.ink;
+
     return CustomPaint(
       painter: _BubblePainter(color: color),
       child: Padding(
@@ -265,16 +273,18 @@ class _BubblePainter extends CustomPainter {
 /// Section title with a hand-drawn underline squiggle.
 class SectionHeader extends StatelessWidget {
   final String title;
-  final Color accent;
+  final Color? accent;
 
   const SectionHeader({
     super.key,
     required this.title,
-    this.accent = ToadColors.toad,
+    this.accent,
   });
 
   @override
   Widget build(BuildContext context) {
+    final accent = this.accent ?? ToadColors.toad;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

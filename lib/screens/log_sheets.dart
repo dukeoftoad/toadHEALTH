@@ -28,7 +28,7 @@ Future<void> showLogStepsSheet(BuildContext context) async {
               children: [
                 Text('Log a walk', style: ToadText.h2),
                 const SizedBox(height: 4),
-                const Text('every honest hop counts', style: ToadText.label),
+                Text('every honest hop counts', style: ToadText.label),
                 const SizedBox(height: 14),
                 Wrap(
                   spacing: 8,
@@ -43,7 +43,7 @@ Future<void> showLogStepsSheet(BuildContext context) async {
                             horizontal: 14, vertical: 8),
                         child: Text(
                           '+$v',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'PatrickHand',
                             fontSize: 15,
                             color: ToadColors.ink,
@@ -64,7 +64,7 @@ Future<void> showLogStepsSheet(BuildContext context) async {
                   child: Center(
                     child: Text(
                       'Add ${fmtNumber(hops)} hops',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'PatrickHand',
                         fontSize: 16,
                         color: ToadColors.paper,
@@ -103,7 +103,7 @@ Future<void> showLogSleepSheet(BuildContext context) async {
               children: [
                 Text('Log last night', style: ToadText.h2),
                 const SizedBox(height: 4),
-                const Text('rest is real data too', style: ToadText.label),
+                Text('rest is real data too', style: ToadText.label),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -113,7 +113,7 @@ Future<void> showLogSleepSheet(BuildContext context) async {
                           setSheet(() => hours = (hours - 1).clamp(0, 16)),
                       padding: const EdgeInsets.all(10),
                       radius: 20,
-                      child: const Text(
+                      child: Text(
                         '-',
                         style: TextStyle(
                             fontFamily: 'Caveat',
@@ -129,7 +129,7 @@ Future<void> showLogSleepSheet(BuildContext context) async {
                           setSheet(() => hours = (hours + 1).clamp(0, 16)),
                       padding: const EdgeInsets.all(10),
                       radius: 20,
-                      child: const Text(
+                      child: Text(
                         '+',
                         style: TextStyle(
                             fontFamily: 'Caveat',
@@ -148,7 +148,7 @@ Future<void> showLogSleepSheet(BuildContext context) async {
                           () => minutes = ((minutes - 15) % 60 + 60) % 60),
                       padding: const EdgeInsets.all(10),
                       radius: 20,
-                      child: const Text(
+                      child: Text(
                         '-',
                         style: TextStyle(
                             fontFamily: 'Caveat',
@@ -164,7 +164,7 @@ Future<void> showLogSleepSheet(BuildContext context) async {
                       onTap: () => setSheet(() => minutes = (minutes + 15) % 60),
                       padding: const EdgeInsets.all(10),
                       radius: 20,
-                      child: const Text(
+                      child: Text(
                         '+',
                         style: TextStyle(
                             fontFamily: 'Caveat',
@@ -186,7 +186,7 @@ Future<void> showLogSleepSheet(BuildContext context) async {
                   child: Center(
                     child: Text(
                       'Save ${hours}h ${minutes.toString().padLeft(2, '0')}m',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'PatrickHand',
                         fontSize: 16,
                         color: ToadColors.cream,

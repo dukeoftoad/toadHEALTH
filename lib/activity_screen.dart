@@ -67,7 +67,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                   children: [
                     Row(
                       children: [
-                        const SketchIcon(
+                        SketchIcon(
                           icon: ToadIcon.run,
                           size: 26,
                           color: ToadColors.toadDeep,
@@ -124,7 +124,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const SketchIcon(
+                                SketchIcon(
                                   icon: ToadIcon.paws,
                                   size: 20,
                                   color: ToadColors.toadDeep,
@@ -148,7 +148,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                     const SizedBox(height: 16),
                     _buildStats(),
                     const SizedBox(height: 20),
-                    const SectionHeader(
+                    SectionHeader(
                         title: "Today's rhythm", accent: ToadColors.toad),
                     const SizedBox(height: 10),
                     SketchCard(
@@ -159,7 +159,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                         children: [
                           Row(
                             children: [
-                              const SketchIcon(
+                              SketchIcon(
                                 icon: ToadIcon.chart,
                                 size: 20,
                                 color: ToadColors.toadDeep,
@@ -185,7 +185,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const SectionHeader(
+                    SectionHeader(
                         title: 'Recent hops', accent: ToadColors.toad),
                     const SizedBox(height: 10),
                     _buildRecent(),

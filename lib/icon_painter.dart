@@ -506,7 +506,7 @@ class SketchIconPainter extends CustomPainter {
 class SketchIcon extends StatelessWidget {
   final ToadIcon icon;
   final double size;
-  final Color color;
+  final Color? color;
   final double strokeWidth;
   final double seed;
   final bool filled;
@@ -515,7 +515,7 @@ class SketchIcon extends StatelessWidget {
     super.key,
     required this.icon,
     this.size = 24,
-    this.color = ToadColors.ink,
+    this.color,
     this.strokeWidth = 1.7,
     this.seed = 1,
     this.filled = false,
@@ -523,6 +523,7 @@ class SketchIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = this.color ?? ToadColors.ink;
     return CustomPaint(
       size: Size.square(size),
       painter: SketchIconPainter(

@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'app.dart' show FlowRoute;
+import 'appearance.dart';
+import 'screens/appearance_screen.dart';
 import 'charts.dart';
 import 'data.dart';
 import 'icon_painter.dart';
@@ -145,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: SelectableText(
                   code,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'PatrickHand',
                     fontSize: 16,
                     color: ToadColors.ink,
@@ -344,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   seed: 2.4,
                   child: Row(
                     children: [
-                      const SketchIcon(
+                      SketchIcon(
                         icon: ToadIcon.flame,
                         size: 30,
                         color: ToadColors.sun,
@@ -356,7 +359,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           Text('${HealthData.streakDays}-day hop streak',
                               style: ToadText.h2),
-                          const Text('longest ever: kept in your vault',
+                          Text('longest ever: kept in your vault',
                               style: ToadText.label),
                         ],
                       ),
@@ -364,27 +367,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const SectionHeader(title: 'Goals', accent: ToadColors.toad),
+                SectionHeader(title: 'Goals', accent: ToadColors.toad),
                 const SizedBox(height: 10),
                 _buildGoals(),
                 const SizedBox(height: 20),
-                const SectionHeader(title: 'Security', accent: ToadColors.toad),
+                SectionHeader(title: 'Appearance', accent: ToadColors.pond),
+                const SizedBox(height: 10),
+                _buildAppearance(),
+                const SizedBox(height: 20),
+                SectionHeader(title: 'Security', accent: ToadColors.toad),
                 const SizedBox(height: 10),
                 _buildSecurity(hasPassword),
                 const SizedBox(height: 20),
-                const SectionHeader(title: 'Backup', accent: ToadColors.toad),
+                SectionHeader(title: 'Backup', accent: ToadColors.toad),
                 const SizedBox(height: 10),
                 _buildBackup(),
                 const SizedBox(height: 20),
-                const SectionHeader(title: 'Data', accent: ToadColors.toad),
+                SectionHeader(title: 'Data', accent: ToadColors.toad),
                 const SizedBox(height: 10),
                 _buildData(),
                 const SizedBox(height: 20),
-                const SectionHeader(title: 'About', accent: ToadColors.toad),
+                SectionHeader(title: 'About', accent: ToadColors.toad),
                 const SizedBox(height: 10),
                 _buildAbout(),
                 const SizedBox(height: 24),
-                const Center(
+                Center(
                   child: Text('local-first. de-googled. toad-approved.',
                       style: ToadText.label),
                 ),
@@ -422,7 +429,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 10),
           Text('Lily Padmore', style: ToadText.h1),
-          const Text('hop member since spring 2024', style: ToadText.label),
+          Text('hop member since spring 2024', style: ToadText.label),
         ],
       ),
     );
@@ -495,6 +502,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildAppearance() {
+    final style = Appearance.instance.style;
+    final styleName = switch (style) {
+      ToadThemeStyle.sketchbook => 'Sketchbook - ink on paper',
+      ToadThemeStyle.toad => 'Toad - crafted moss green',
+      ToadThemeStyle.toadmark => 'Toadmark - the family brand',
+      ToadThemeStyle.material => 'System Material - Material You',
+    };
+    return SketchCard(
+      seed: 6.2,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          FlowRoute(page: const AppearanceScreen()),
+        ),
+        child: Row(
+          children: [
+            SketchIcon(
+              icon: ToadIcon.gear,
+              size: 22,
+              color: ToadColors.pondDeep,
+              seed: 15,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Theme & daylight', style: ToadText.body),
+                  Text(styleName, style: ToadText.label),
+                ],
+              ),
+            ),
+            SketchIcon(
+              icon: ToadIcon.chevron,
+              size: 18,
+              color: ToadColors.inkSoft,
+              seed: 15,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSecurity(bool hasPassword) {
     return SketchCard(
       seed: 7.4,
@@ -521,7 +572,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Your health data is encrypted with AES-256-GCM. On Android the '
             'master key is guarded by the hardware Keystore. This app has no '
             'INTERNET permission - records physically cannot leave the '
@@ -572,7 +623,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Backups are sealed with AES-256 under a passphrase only you '
             'know. The code is pure ciphertext - store it anywhere, it is '
             'useless without your passphrase.',
@@ -612,7 +663,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Fill the pond with 30 days of clearly-labelled pretend data to '
             'explore the app - or wipe the vault and re-key it.',
             style: ToadText.label,
@@ -664,7 +715,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('toadHEALTH v1.1.0', style: ToadText.body),
+                Text('toadHEALTH v1.1.0', style: ToadText.body),
                 const SizedBox(height: 2),
                 Text(
                   'Local-first, end-to-end encrypted, zero trackers. Every '

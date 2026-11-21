@@ -137,7 +137,7 @@ class _WatchScreenState extends State<WatchScreen>
           padding: const EdgeInsets.all(8),
           radius: 24,
           seed: 4.2,
-          child: const SketchIcon(
+          child: SketchIcon(
             icon: ToadIcon.chevron,
             size: 20,
             color: ToadColors.toadDeep,
@@ -147,7 +147,7 @@ class _WatchScreenState extends State<WatchScreen>
         const SizedBox(width: 10),
         Text('Pond Watch', style: ToadText.h2),
         const Spacer(),
-        const SketchIcon(
+        SketchIcon(
           icon: ToadIcon.watch,
           size: 26,
           color: ToadColors.pondDeep,
@@ -178,7 +178,7 @@ class _WatchScreenState extends State<WatchScreen>
         background: ToadColors.coral.withOpacity(0.10),
         child: Row(
           children: [
-            const SketchIcon(
+            SketchIcon(
               icon: ToadIcon.heart,
               size: 20,
               color: ToadColors.coral,
@@ -222,7 +222,7 @@ class _WatchScreenState extends State<WatchScreen>
                 child: Text('Clip a buddy onto your pond', style: ToadText.h2),
               ),
               const SizedBox(height: 6),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'toadHEALTH listens for nearby smart watches and '
@@ -296,7 +296,7 @@ class _WatchScreenState extends State<WatchScreen>
               const SizedBox(height: 10),
               Text('listening over the pond...', style: ToadText.h2),
               const SizedBox(height: 4),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Wear OS buddies: keep the watch screen awake and turn on '
@@ -321,10 +321,10 @@ class _WatchScreenState extends State<WatchScreen>
           ),
         ),
         const SizedBox(height: 16),
-        const SectionHeader(title: 'Buddies found', accent: ToadColors.pond),
+        SectionHeader(title: 'Buddies found', accent: ToadColors.pond),
         const SizedBox(height: 10),
         if (watch.devices.isEmpty)
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Text(
               'no buddies yet - keep the watch close and awake',
@@ -393,7 +393,7 @@ class _WatchScreenState extends State<WatchScreen>
           const SizedBox(height: 12),
           Text('Hopping over to $name...', style: ToadText.h2),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'negotiating the heart-rate pipe over Bluetooth',
             style: ToadText.label,
           ),
@@ -427,7 +427,7 @@ class _WatchScreenState extends State<WatchScreen>
             children: [
               Row(
                 children: [
-                  const SketchIcon(
+                  SketchIcon(
                     icon: ToadIcon.watch,
                     size: 24,
                     color: ToadColors.pondDeep,
@@ -449,7 +449,7 @@ class _WatchScreenState extends State<WatchScreen>
                         color: ToadColors.sun.withOpacity(0.25),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text(
+                      child: Text(
                         'demo buddy',
                         style: TextStyle(
                           fontFamily: 'PatrickHand',
@@ -543,7 +543,7 @@ class _WatchScreenState extends State<WatchScreen>
               const SizedBox(height: 14),
               Row(
                 children: [
-                  const SketchIcon(
+                  SketchIcon(
                     icon: ToadIcon.flame,
                     size: 18,
                     color: ToadColors.sun,
@@ -588,7 +588,7 @@ class _WatchScreenState extends State<WatchScreen>
             padding: const EdgeInsets.all(14),
             child: Row(
               children: [
-                const SketchIcon(
+                SketchIcon(
                   icon: ToadIcon.sparkle,
                   size: 22,
                   color: ToadColors.toadDeep,
@@ -620,7 +620,7 @@ class _WatchScreenState extends State<WatchScreen>
   }
 
   Widget _buildPrivacyNote() {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 4),
       child: Text(
         'The BLE heart-rate link is direct Bluetooth. The optional Wear OS '
@@ -667,7 +667,7 @@ class _WatchScreenState extends State<WatchScreen>
             children: [
               Row(
                 children: [
-                  const SketchIcon(
+                  SketchIcon(
                     icon: ToadIcon.watch,
                     size: 20,
                     color: ToadColors.pondDeep,
@@ -841,12 +841,13 @@ class _WatchPainter extends CustomPainter {
 /// Expanding sketchy radar rings while listening for buddies.
 class _RadarPainter extends CustomPainter {
   final double t;
-  final Color color;
+  final Color? color;
 
-  const _RadarPainter({required this.t, this.color = ToadColors.pond});
+  const _RadarPainter({required this.t, this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
+    final color = this.color ?? ToadColors.pond;
     final c = Offset(size.width / 2, size.height / 2);
     final rMax = math.min(size.width, size.height) / 2 - 6;
 
@@ -1015,7 +1016,7 @@ class _DeviceCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          const SketchIcon(
+          SketchIcon(
             icon: ToadIcon.watch,
             size: 24,
             color: ToadColors.pondDeep,

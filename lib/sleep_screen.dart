@@ -56,7 +56,7 @@ class _SleepScreenState extends State<SleepScreen>
                   children: [
                     Row(
                       children: [
-                        const SketchIcon(
+                        SketchIcon(
                           icon: ToadIcon.moon,
                           size: 26,
                           color: ToadColors.moss,
@@ -75,7 +75,7 @@ class _SleepScreenState extends State<SleepScreen>
                     const SizedBox(height: 16),
                     _buildNightCard(),
                     const SizedBox(height: 20),
-                    const SectionHeader(title: 'This week', accent: ToadColors.moss),
+                    SectionHeader(title: 'This week', accent: ToadColors.moss),
                     const SizedBox(height: 10),
                     SketchCard(
                       seed: 4.4,
@@ -95,7 +95,7 @@ class _SleepScreenState extends State<SleepScreen>
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const SectionHeader(title: 'Last 7 nights', accent: ToadColors.moss),
+                    SectionHeader(title: 'Last 7 nights', accent: ToadColors.moss),
                     const SizedBox(height: 10),
                     _buildStats(),
                   ],
@@ -118,7 +118,7 @@ class _SleepScreenState extends State<SleepScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Night pond',
             style: TextStyle(
               fontFamily: 'Caveat',
@@ -172,7 +172,7 @@ class _SleepScreenState extends State<SleepScreen>
             children: [
               Text(
                 logged ? fmtDuration(HealthData.todaySleepMin) : 'not logged yet',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Caveat',
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
@@ -198,7 +198,7 @@ class _SleepScreenState extends State<SleepScreen>
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               child: Text(
                 logged ? 'Edit last night' : 'Log last night',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'PatrickHand',
                   fontSize: 15,
                   color: ToadColors.moss,
@@ -225,9 +225,9 @@ class _SleepScreenState extends State<SleepScreen>
       child: Column(
         children: [
           _statRow('Average night', loggedNights > 0 ? fmtDuration(avg) : '-'),
-          const Divider(height: 18, color: ToadColors.inkSoft),
+          Divider(height: 18, color: ToadColors.inkSoft),
           _statRow('Best night', best > 0 ? fmtDuration(best) : '-'),
-          const Divider(height: 18, color: ToadColors.inkSoft),
+          Divider(height: 18, color: ToadColors.inkSoft),
           _statRow('Nights logged', '$loggedNights of 7'),
         ],
       ),
