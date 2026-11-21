@@ -58,6 +58,28 @@ backend - see [ARCHITECTURE.md](ARCHITECTURE.md):
 - **Flowing transitions** - screens drift in like lily pads.
 - **Handwritten typography** - Caveat and Gochi Hand bundled locally.
 
+## Appearance (v1.4)
+
+The paper the toad is drawn on is a choice, in the You tab's new
+Appearance page:
+
+- **Sketchbook** - the native ink-on-paper: warm cream, swamp greens,
+  the toadHEALTH original.
+- **Toad** - toadPLAYER's crafted palette: deep moss green with warm
+  earth accents, never follows the wallpaper.
+- **Toadmark** - the frog-lime family brand: ink on warm paper in
+  daylight, a frog-lime glow on deep ink at night.
+- **System Material** - Material You: follows the wallpaper's colors on
+  Android 12+ (read locally through `dynamic_color`, no network), toad
+  green elsewhere.
+- **Daylight** - follow the system, keep the paper bright, or sink to
+  the night pond: deep moss surfaces with cream ink in every style.
+
+The pick persists to a tiny plain JSON file in the app's private store
+(no unlock needed - the theme is not health data), and the whole app -
+charts, painters, hand-drawn cards and all - re-inks live because every
+color flows through the active palette.
+
 ## Screens
 
 Splash (toad hops in) -> Lock screen (if app password is set) -> Home pond ->

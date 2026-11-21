@@ -40,6 +40,9 @@ jobs:
         # Flutter 3.50 reports SDK deprecations as infos; keep warnings/errors fatal.
         run: flutter analyze --no-fatal-infos
 
+      - name: Unit tests
+        run: flutter test
+
       - name: Build debug APK
         run: flutter build apk --debug
 

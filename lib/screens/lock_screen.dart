@@ -121,7 +121,7 @@ class _LockScreenState extends State<LockScreen> {
                 const SizedBox(height: 14),
                 Center(child: Text('The pond is locked', style: ToadText.h1)),
                 const SizedBox(height: 4),
-                const Center(
+                Center(
                   child: Text(
                     'Your records are sealed. Wake the toad to open them.',
                     style: ToadText.label,
@@ -151,7 +151,7 @@ class _LockScreenState extends State<LockScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Center(
                           child: _busy && !_showRestore
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 18,
                                   height: 18,
                                   child: CircularProgressIndicator(
@@ -204,7 +204,7 @@ class _LockScreenState extends State<LockScreen> {
                       children: [
                         Text('Password restore', style: ToadText.h2),
                         const SizedBox(height: 4),
-                        const Text(
+                        Text(
                           'Enter the recovery code you saved when setting '
                           'the password, and pick a new one. The vault is '
                           're-keyed on this device only.',

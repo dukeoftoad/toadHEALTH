@@ -66,7 +66,7 @@ class _WaterScreenState extends State<WaterScreen> with TickerProviderStateMixin
               children: [
                 Row(
                   children: [
-                    const SketchIcon(
+                    SketchIcon(
                       icon: ToadIcon.drop,
                       size: 26,
                       color: ToadColors.pondDeep,
@@ -170,7 +170,7 @@ class _WaterScreenState extends State<WaterScreen> with TickerProviderStateMixin
                       padding: const EdgeInsets.all(12),
                       radius: 22,
                       seed: 4.2,
-                      child: const SketchIcon(
+                      child: SketchIcon(
                         icon: ToadIcon.minus,
                         size: 20,
                         color: ToadColors.inkSoft,
@@ -188,7 +188,7 @@ class _WaterScreenState extends State<WaterScreen> with TickerProviderStateMixin
                         seed: 5.6,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
+                          children: [
                             SketchIcon(
                               icon: ToadIcon.plus,
                               size: 22,

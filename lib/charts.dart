@@ -75,21 +75,24 @@ class WavePainter extends CustomPainter {
 /// A sketchy circular progress ring.
 class SketchRingPainter extends CustomPainter {
   final double progress;
-  final Color trackColor;
-  final Color progressColor;
+  final Color? trackColor;
+  final Color? progressColor;
   final double strokeWidth;
   final double seed;
 
   SketchRingPainter({
     required this.progress,
-    this.trackColor = ToadColors.ink,
-    this.progressColor = ToadColors.toad,
+    this.trackColor,
+    this.progressColor,
     this.strokeWidth = 6,
     this.seed = 1,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    final trackColor = this.trackColor ?? ToadColors.ink;
+    final progressColor = this.progressColor ?? ToadColors.toad;
+
     final center = Offset(size.width / 2, size.height / 2);
     final r = math.min(size.width, size.height) / 2 - strokeWidth - 2;
 
@@ -131,21 +134,25 @@ class SketchBarsPainter extends CustomPainter {
   final List<double> values;
   final List<String> labels;
   final int activeIndex;
-  final Color ink;
-  final Color barFill;
-  final Color activeFill;
+  final Color? ink;
+  final Color? barFill;
+  final Color? activeFill;
 
   SketchBarsPainter({
     required this.values,
     required this.labels,
     this.activeIndex = -1,
-    this.ink = ToadColors.ink,
-    this.barFill = ToadColors.toadLight,
-    this.activeFill = ToadColors.toad,
+    this.ink,
+    this.barFill,
+    this.activeFill,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    final ink = this.ink ?? ToadColors.ink;
+    final barFill = this.barFill ?? ToadColors.toadLight;
+    final activeFill = this.activeFill ?? ToadColors.toad;
+
     final w = size.width;
     final h = size.height;
     const plotLeft = 10.0;
@@ -192,7 +199,7 @@ class SketchBarsPainter extends CustomPainter {
         final tp = TextPainter(
           text: TextSpan(
             text: labels[i],
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'PatrickHand',
               fontSize: 11,
               color: ToadColors.inkSoft,
@@ -218,17 +225,20 @@ class SketchBarsPainter extends CustomPainter {
 /// A sketchy line chart with a hatched (cross-hatched ink) fill underneath.
 class SketchLinePainter extends CustomPainter {
   final List<double> points;
-  final Color ink;
-  final Color accent;
+  final Color? ink;
+  final Color? accent;
 
   SketchLinePainter({
     required this.points,
-    this.ink = ToadColors.ink,
-    this.accent = ToadColors.toad,
+    this.ink,
+    this.accent,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    final ink = this.ink ?? ToadColors.ink;
+    final accent = this.accent ?? ToadColors.toad;
+
     final w = size.width;
     final h = size.height;
     const plotL = 8.0;
@@ -289,12 +299,13 @@ class SketchLinePainter extends CustomPainter {
 /// Three rising "Z" glyphs for the sleeping toad.
 class ZzzPainter extends CustomPainter {
   final double phase;
-  final Color color;
+  final Color? color;
 
-  ZzzPainter({required this.phase, this.color = ToadColors.ink});
+  ZzzPainter({required this.phase, this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
+    final color = this.color ?? ToadColors.ink;
     for (var i = 0; i < 3; i++) {
       final t = (phase + i * 0.34) % 1.0;
       final s = 7.0 + i * 3.5;
@@ -324,19 +335,21 @@ class ZzzPainter extends CustomPainter {
 /// Expanding ripples (for taps and splashes).
 class RipplePainter extends CustomPainter {
   final double phase;
-  final Color color;
+  final Color? color;
   final double cx;
   final double cy;
 
   RipplePainter({
     required this.phase,
-    this.color = ToadColors.pondDeep,
+    this.color,
     this.cx = 0.5,
     this.cy = 0.5,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    final color = this.color ?? ToadColors.pondDeep;
+
     final center = Offset(size.width * cx, size.height * cy);
     for (var i = 0; i < 3; i++) {
       final t = (phase + i * 0.34) % 1.0;
@@ -356,14 +369,14 @@ class RipplePainter extends CustomPainter {
 class PondPainter extends CustomPainter {
   final double level;
   final double phase;
-  final Color water;
-  final Color ink;
+  final Color? water;
+  final Color? ink;
 
   PondPainter({
     required this.level,
     this.phase = 0,
-    this.water = ToadColors.pond,
-    this.ink = ToadColors.ink,
+    this.water,
+    this.ink,
   });
 
   Path _waveLine(double w, double y, double ph, double amp) {
@@ -377,6 +390,9 @@ class PondPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final water = this.water ?? ToadColors.pond;
+    final ink = this.ink ?? ToadColors.ink;
+
     final w = size.width;
     final h = size.height;
     final waterTop = h * (1 - level.clamp(0.0, 1.0) * 0.8);
@@ -436,17 +452,20 @@ class PondPainter extends CustomPainter {
 /// A small horizontal fill bar (sleep breakdown rows).
 class MiniBarPainter extends CustomPainter {
   final double ratio;
-  final Color color;
-  final Color ink;
+  final Color? color;
+  final Color? ink;
 
   MiniBarPainter({
     required this.ratio,
-    this.color = ToadColors.toad,
-    this.ink = ToadColors.ink,
+    this.color,
+    this.ink,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    final color = this.color ?? ToadColors.toad;
+    final ink = this.ink ?? ToadColors.ink;
+
     final w = size.width;
     final h = size.height;
     final track =
@@ -468,12 +487,13 @@ class MiniBarPainter extends CustomPainter {
 
 /// A short wobbly underline squiggle.
 class SquigglePainter extends CustomPainter {
-  final Color color;
+  final Color? color;
 
-  SquigglePainter({this.color = ToadColors.toad});
+  SquigglePainter({this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
+    final color = this.color ?? ToadColors.toad;
     final w = size.width;
     final pts = <Offset>[];
     for (var i = 0; i <= 20; i++) {
