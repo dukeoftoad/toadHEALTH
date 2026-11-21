@@ -39,7 +39,9 @@ jobs:
         run: flutter pub get
 
       - name: Analyze
-        run: flutter analyze
+        # Same policy as the main gate: SDK deprecation infos stay visible
+        # but only warnings and errors fail the build.
+        run: flutter analyze --no-fatal-infos
 
       - name: Build web
         run: flutter build web --release --web-renderer html --base-href "/toadHEALTH/"
