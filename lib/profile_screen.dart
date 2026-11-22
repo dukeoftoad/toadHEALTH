@@ -720,7 +720,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('toadHEALTH v'$appVersion, style: ToadText.body),
+                Text('toadHEALTH v$appVersion', style: ToadText.body),
                 const SizedBox(height: 2),
                 Text(
                   'Local-first, end-to-end encrypted, zero trackers. Every '

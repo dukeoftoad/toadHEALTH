@@ -5,7 +5,7 @@ import 'dart:io';
 /// The installed version, in lockstep with pubspec.yaml (the release tag's
 /// name). Kept a hand-maintained const because toadHEALTH deliberately
 /// carries no version-info package.
-const String appVersion = '1.4.0';
+const String appVersion = '1.5.0';
 
 /// The slice of a GitHub release toadHEALTH needs for the self-update flow.
 class GitHubRelease {

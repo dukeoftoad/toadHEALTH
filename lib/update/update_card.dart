@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../icon_painter.dart';
 import '../theme.dart';
 import '../toad_painter.dart';
 import '../widgets.dart';
@@ -58,7 +59,7 @@ class _UpdateCardView extends StatelessWidget {
             UpdateStatus.checking => const _CheckingView(),
             UpdateStatus.available => _AvailableView(update: update),
             UpdateStatus.downloading => _DownloadingView(update: update),
-            UpdateStatus.installing => const Text(
+            UpdateStatus.installing => Text(
               'The installer has the update — confirm it there.',
               style: ToadText.body,
             ),
@@ -96,7 +97,7 @@ class _IdleView extends StatelessWidget {
                   seed: 9,
                 ),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
                     "You're on the latest release",
                     style: ToadText.body,
@@ -150,7 +151,7 @@ class _AvailableView extends StatelessWidget {
       children: [
         Text('toadHEALTH ${release.tagName} is available', style: ToadText.h2),
         const SizedBox(height: 2),
-        const Text(
+        Text(
           'Downloaded only if you ask.',
           style: ToadText.label,
         ),
@@ -329,7 +330,7 @@ class UpdateBanner extends StatelessWidget {
     return ListenableBuilder(
       listenable: update,
       builder: (context, _) {
-        final GitHubRelease release = update.bannerRelease;
+        final GitHubRelease? release = update.bannerRelease;
         if (release == null) return const SizedBox.shrink();
         return Padding(
           padding: const EdgeInsets.fromLTRB(18, 6, 18, 0),
