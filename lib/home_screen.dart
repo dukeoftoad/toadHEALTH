@@ -14,6 +14,7 @@ import 'screens/watch_screen.dart';
 import 'sleep_screen.dart';
 import 'state/app_services.dart';
 import 'theme.dart';
+import 'update/update_card.dart';
 import 'toad_painter.dart';
 import 'water_screen.dart';
 import 'widgets.dart';
@@ -89,6 +90,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 return ListView(
                   padding: const EdgeInsets.fromLTRB(18, 10, 18, 130),
                   children: [
+                    // The quiet update banner the silent startup check
+                    // can raise; nothing downloads until the user asks.
+                    const UpdateBanner(),
                     Row(
                       children: [
                         SketchIcon(

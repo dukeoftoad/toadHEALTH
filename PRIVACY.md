@@ -8,7 +8,7 @@ but verifiable properties of the code in this repository.
 | Claim | How it is enforced |
 | --- | --- |
 | No first-party telemetry or health backend | No Firebase, no Health Connect, no Google Fit, no reCAPTCHA, no Crashlytics, and no toadHEALTH-operated server. The opt-in Wear OS companion does use Google Play services' Wear Data Layer, including its Google Cloud relay fallback described below. |
-| No app-owned Internet client | The phone and watch source manifests do not request **`INTERNET`**. This does not prevent Google Play services from using its own network connection to relay Wear Data Layer messages through Google-owned servers when Bluetooth is unavailable. |
+| No app-owned Internet client beyond the update check | The update flow is the app's one and only network path: a plain GET to `api.github.com/repos/dukeoftoad/toadHEALTH/releases/latest`, run on your "Check for updates" tap or once silently on app open. It sends nothing about the device, the vault or the health records, and nothing is ever uploaded. The Wear Data Layer relay below remains the only other network involvement, and it belongs to Google Play services, not toadHEALTH. |
 | No analytics / telemetry | None present. Nothing to opt out of. |
 | No Android cloud backup of your records | `android:allowBackup="false"` - the vault is excluded from Google Drive device backup and device-transfer. |
 | No third-party plugins with hidden network calls | Step counter and Keystore are **our own ~150-line Kotlin channels** in `MainActivity.kt` (AOSP sensor API + Android Keystore). The dependency audit is one file long. |
@@ -18,6 +18,10 @@ but verifiable properties of the code in this repository.
 
 ## What this app DOES do
 
+- Checks GitHub for a newer release (v1.4): one plain GET to the repo's
+  `releases/latest`, on your tap or once silently on app open - never
+  periodically. Downloads the update APK only after you tap
+  "Download & install". Nothing about the device is sent, stored or logged.
 - Reads the hardware step counter sensor (AOSP `Sensor.TYPE_STEP_COUNTER`) -
   a local OS API that involves no company.
 - Stores every record only on the device, encrypted with AES-256-GCM.
